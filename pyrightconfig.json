@@ -1,0 +1,7 @@
+{
+    "include": ["flask_website", "tests", "run.py", "build_thumbs.py", "build_stats.py"],
+    "exclude": ["**/__pycache__", ".venv"],
+    "typeCheckingMode": "standard",
+    "pythonVersion": "3.11",
+    "reportMissingImports": true
+}

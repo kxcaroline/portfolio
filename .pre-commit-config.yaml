@@ -1,0 +1,35 @@
+# Pre-commit hooks - fast local checks that run before each commit.
+# Activate once:  pip install pre-commit && pre-commit install
+# Run on demand:  pre-commit run --all-files
+#
+# Deliberately fast hygiene/safety checks; the full lint, type and test
+# gates run in CI and are listed in .github/workflows/ci.yml.
+#
+# The commit-msg hook needs its own install step:
+#   pre-commit install --hook-type pre-commit --hook-type commit-msg
+exclude: '^flask_website/static/demos/'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+        # The M10 demo dashboard is a single self-contained HTML deliverable
+        # (~5 MB, Plotly inlined); everything else stays under 1 MB.
+        exclude: '^flask_website/static/demos/'
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict
+
+  # The commit convention in .gitmessage, checked rather than suggested. A
+  # template prompts; only a hook catches the message written in a hurry.
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.6.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, perf, docs, refactor, test, ci, chore, content]

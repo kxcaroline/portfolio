@@ -1,0 +1,16 @@
+# Pylint configuration. CI fails below 10/10, so anything tolerated is
+# tolerated here, in writing, rather than by lowering the bar.
+
+[MAIN]
+# Resolve first-party imports whether pylint runs from the repo root or not.
+init-hook='import sys, os; sys.path.insert(0, os.path.abspath("."))'
+
+[FORMAT]
+max-line-length=100
+
+[DESIGN]
+# Loaders that validate as they read take a few more branches than the
+# default budget expects; splitting them would separate a check from the
+# read it protects.
+max-branches=15
+max-locals=20

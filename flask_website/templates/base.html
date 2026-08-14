@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %} — Caroline Kim</title>
+
+    <!-- Search results and link previews (LinkedIn, Slack, iMessage…) -->
+    <meta name="description" content="{% block description %}Caroline Kim — applied AI and ML engineering. Thirteen projects taking one dataset from web scrape to a fine-tuned, deployed language model: PostgreSQL, testing and CI, Docker, AWS, and machine learning.{% endblock description %}">
+    <meta name="author" content="Caroline Kim">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Caroline Kim">
+    <meta property="og:title" content="{% block og_title %}Caroline Kim — Applied AI &amp; ML Engineering{% endblock og_title %}">
+    <meta property="og:description" content="Thirteen projects taking one dataset from web scrape to a fine-tuned, deployed language model.">
+    <meta property="og:image" content="{{ url_for('static', filename='og-image.png', _external=True) }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Caroline Kim — Applied AI &amp; ML Engineering">
+    <meta name="twitter:description" content="Thirteen projects taking one dataset from web scrape to a fine-tuned, deployed language model.">
+    <meta name="twitter:image" content="{{ url_for('static', filename='og-image.png', _external=True) }}">
+
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='og-image.png') }}">
+    <script>
+    // Set the theme before first paint (no flash): saved choice wins,
+    // otherwise follow the visitor's OS preference.
+    (function () {
+        try {
+            var t = localStorage.getItem("theme");
+            if (!t) {
+                t = window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+            document.documentElement.setAttribute("data-theme", t);
+        } catch (e) { /* no-op */ }
+    })();
+    </script>
+    {# The two faces the first screen needs, fetched in parallel with the
+       stylesheet rather than after the browser has parsed it. The rest are
+       declared in the stylesheet and load when something asks for them. #}
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{{ url_for('static', filename='fonts/inter-latin-400-normal.woff2') }}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{{ url_for('static', filename='fonts/ibm-plex-mono-latin-400-normal.woff2') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="shell">
+
+    <!-- ======= Left rail: identity + nav + (on Projects) scroll-spy index ======= -->
+    <aside class="rail">
+        <div class="rail-top">
+            <img class="rail-avatar" src="{{ url_for('static', filename='images/profile.webp') }}"
+                 alt="Caroline Kim" width="132" height="132">
+            {# The name opens an email rather than going home: Home is already
+               one line below in the nav, so the wordmark is free to be the
+               fastest way to get in touch. #}
+            <a class="rail-name" href="mailto:carolinekim@hey.com"
+               title="Email Caroline">CAROLINE&nbsp;KIM</a>
+            <div class="rail-role">APPLIED AI &middot; ML ENGINEERING</div>
+        </div>
+
+        <nav class="rail-nav" aria-label="Site">
+            <div class="rail-heading">MENU</div>
+            <ul>
+                <li><a href="{{ url_for('pages.home') }}"
+                       class="{% if active == 'home' %}active{% endif %}">Home</a></li>
+                <li>
+                    <a href="{{ url_for('pages.projects') }}"
+                       class="menu-projects {% if active == 'projects' %}active{% endif %}">Projects</a>
+                    <ul class="menu-sub {% if active != 'projects' %}collapsed{% endif %}"
+                        id="module-index">
+                        {% for m in nav_modules %}
+                        <li>
+                            <a class="area-{{ m.area_key }}"
+                               href="{{ url_for('pages.projects') }}#module-{{ m.id }}"
+                               data-target="module-{{ m.id }}">
+                                <span class="idx-dot" aria-hidden="true"></span>
+                                <span class="idx-code">{{ m.code }}</span>
+                                <span class="idx-title">{{ m.title }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li><a href="{{ url_for('pages.contact') }}"
+                       class="{% if active == 'contact' %}active{% endif %}">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="rail-bottom">
+            <div class="rail-heading">PRESENCE</div>
+            <ul class="rail-links">
+                <li><a href="https://github.com/kxcaroline" target="_blank" rel="noopener">GitHub <span class="mono-dim">@kxcaroline</span></a></li>
+                <li><a href="https://huggingface.co/kxcaroline" target="_blank" rel="noopener">Hugging Face <span class="mono-dim">@kxcaroline</span></a></li>
+                <li><a href="https://www.linkedin.com/in/caroline-y-kim" target="_blank" rel="noopener">LinkedIn <span class="mono-dim">@caroline-y-kim</span></a></li>
+                <li><a href="mailto:carolinekim@hey.com">Email <span class="mono-dim">carolinekim@hey.com</span></a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- ======= Main content ======= -->
+    <main class="content" id="main">
+        {# Icon plus a word. The glyph alone was a 34px circle with no visible
+           edge, and a crescent on its own asks the reader to guess. The label
+           names what the click gives you, not what you are in. #}
+        <button type="button" class="theme-toggle" id="theme-toggle"
+                aria-label="Switch colour theme">
+            <span class="icon-moon" aria-hidden="true">&#9789;</span>
+            <span class="icon-sun" aria-hidden="true">&#9788;</span>
+            <span class="theme-word icon-moon">Dark</span>
+            <span class="theme-word icon-sun">Light</span>
+        </button>
+        {% block content %}{% endblock content %}
+
+        {# Previous / next, driven by the same order as the rail nav. A
+           reader who has scrolled to the bottom should not have to scroll
+           back to the top to go anywhere. #}
+        {% set order = [("home", "Home", url_for('pages.home')),
+                        ("projects", "Projects", url_for('pages.projects')),
+                        ("contact", "Contact", url_for('pages.contact'))] %}
+        {% set keys = order | map(attribute=0) | list %}
+        {% if active in keys %}
+        {% set i = keys.index(active) %}
+        <nav class="pagenav" aria-label="Page navigation">
+            {% if i > 0 %}
+            <a class="pagenav-prev" href="{{ order[i - 1][2] }}">
+                <span class="pagenav-label">PREVIOUS</span>&larr; {{ order[i - 1][1] }}</a>
+            {% endif %}
+            {% if i < keys | length - 1 %}
+            <a class="pagenav-next" href="{{ order[i + 1][2] }}">
+                <span class="pagenav-label">NEXT</span>{{ order[i + 1][1] }} &rarr;</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        <footer class="footer">
+            <span>Caroline Kim &middot; 2026</span>
+            <span>Built with Flask &middot; JHU EP 605.256</span>
+        </footer>
+    </main>
+
+</div>
+
+<script>
+// On the Projects page, clicking "Projects" toggles the module tree
+// (navigating would just reload the page). Elsewhere it navigates to
+// the Projects page, where the tree is open by default.
+(function () {
+    var sub = document.getElementById("module-index");
+    var projLink = document.querySelector(".menu-projects");
+    if (!sub || !projLink) return;
+    if (projLink.classList.contains("active")) {
+        projLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            sub.classList.toggle("collapsed");
+        });
+    }
+})();
+
+// Dark / light toggle: flips the theme and remembers the choice.
+(function () {
+    var t = document.getElementById("theme-toggle");
+    if (!t) return;
+    t.addEventListener("click", function () {
+        var root = document.documentElement;
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) { /* no-op */ }
+    });
+})();
+</script>
+
+{% block scripts %}{% endblock scripts %}
+
+{# Cookie-free analytics: page counts and referrers only, no cookies, no
+   cross-site identifiers, and therefore no consent banner. Loaded with
+   defer so it cannot block first paint. Emitted only when the token is
+   configured, so the repository ships no tracking code. #}
+{% if config.ANALYTICS_TOKEN %}
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "{{ config.ANALYTICS_TOKEN }}"}'></script>
+{% endif %}
+</body>
+</html>

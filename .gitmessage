@@ -1,0 +1,16 @@
+# <type>: <summary in imperative mood, lowercase, no period, <=72 chars>
+#
+# Body (optional, wrap ~72 cols). Explain what changed and why, as "- " bullets.
+#
+# --- convention ------------------------------------------------------------
+# type    feat | fix | perf | docs | refactor | test | ci | chore | content
+# summary imperative ("add", not "added"/"adds"), lowercase, no trailing period.
+#
+# "content" is for projects.json / image edits - the site's data rather
+# than its code.
+#
+# examples
+#   feat: group original work above coursework on the projects page
+#   content: add the P01 case study and screenshots
+#   ci: pin pyright and add the gunicorn boot check
+#   perf: self-host the webfonts and minify the stylesheet

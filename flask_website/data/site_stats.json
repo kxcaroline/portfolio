@@ -1,0 +1,21 @@
+{
+  "generated_from": "cleaned_gradcafe.json",
+  "records": 96948,
+  "universities": 2081,
+  "programs": 5154,
+  "acceptance_rate": 46.0,
+  "median_gpa": 3.83,
+  "gpa_curve": [
+    { "gpa": 3.0, "n": 480, "rate": 54.0 },
+    { "gpa": 3.1, "n": 468, "rate": 54.7 },
+    { "gpa": 3.2, "n": 942, "rate": 55.0 },
+    { "gpa": 3.3, "n": 1232, "rate": 51.0 },
+    { "gpa": 3.4, "n": 2021, "rate": 48.7 },
+    { "gpa": 3.5, "n": 2756, "rate": 50.5 },
+    { "gpa": 3.6, "n": 3879, "rate": 52.9 },
+    { "gpa": 3.7, "n": 4842, "rate": 50.3 },
+    { "gpa": 3.8, "n": 8267, "rate": 48.5 },
+    { "gpa": 3.9, "n": 9035, "rate": 49.7 },
+    { "gpa": 4.0, "n": 11553, "rate": 50.2 }
+  ]
+}

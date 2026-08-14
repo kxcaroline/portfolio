@@ -1,0 +1,122 @@
+{
+  "module_1/site_home.webp": [
+    344,
+    215
+  ],
+  "module_1/site_projects.webp": [
+    344,
+    215
+  ],
+  "module_10/class-mix-shift.webp": [
+    344,
+    165
+  ],
+  "module_10/growth-rates.webp": [
+    344,
+    129
+  ],
+  "module_11/cluster_run.webp": [
+    344,
+    86
+  ],
+  "module_11/model_details.webp": [
+    344,
+    119
+  ],
+  "module_11/wandb_run.webp": [
+    344,
+    119
+  ],
+  "module_12/accuracy_curve.webp": [
+    344,
+    172
+  ],
+  "module_12/mse_curve.webp": [
+    344,
+    172
+  ],
+  "module_13/blank_form.webp": [
+    344,
+    178
+  ],
+  "module_13/prediction.webp": [
+    344,
+    181
+  ],
+  "module_13/training_output.webp": [
+    344,
+    291
+  ],
+  "module_2/robots_check.webp": [
+    344,
+    453
+  ],
+  "module_3/console_output.webp": [
+    344,
+    190
+  ],
+  "module_3/webpage_dashboard.webp": [
+    344,
+    215
+  ],
+  "module_4/actions_success.webp": [
+    344,
+    252
+  ],
+  "module_5/least-privilege-proof.webp": [
+    344,
+    101
+  ],
+  "module_5/snyk_analysis.webp": [
+    344,
+    106
+  ],
+  "module_6/compose_dashboard.webp": [
+    344,
+    257
+  ],
+  "module_6/rabbitmq_management.webp": [
+    344,
+    257
+  ],
+  "module_7/ec2-app.webp": [
+    344,
+    136
+  ],
+  "module_7/grad-cafe-bucket.webp": [
+    344,
+    127
+  ],
+  "module_7/liveNotebook.webp": [
+    344,
+    58
+  ],
+  "module_8/Acceptances-over-Time.webp": [
+    344,
+    165
+  ],
+  "module_8/GPA-by-Outcome.webp": [
+    344,
+    260
+  ],
+  "module_8/GPA-vs-GRE.webp": [
+    344,
+    150
+  ],
+  "module_8/Numeric-Correlation-Heatmap.webp": [
+    344,
+    277
+  ],
+  "module_9/computer_science.webp": [
+    344,
+    258
+  ],
+  "module_9/elbow.webp": [
+    344,
+    206
+  ],
+  "module_9/initial_cluster.webp": [
+    344,
+    241
+  ]
+}

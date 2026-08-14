@@ -1,0 +1,1625 @@
+/* ---------- Webfonts, served from this origin ---------- */
+/*
+ * Self-hosted rather than fetched from Google. Three reasons, in order of
+ * weight: a visitor's browser no longer announces itself to a third party
+ * to read this page; the stylesheet stops being a render-blocking request
+ * to a host outside our control; and the files are stamped and cacheable
+ * for a year like every other asset here.
+ *
+ * Latin subsets only, in woff2 only - 108KB for five faces. Any browser
+ * that cannot read woff2 falls through to the system stack in --sans and
+ * --mono, which is a fair result for a browser that old.
+ *
+ * font-display: swap renders in the fallback immediately and swaps when
+ * the file lands, so text is never invisible while a font downloads.
+ */
+@font-face {
+    font-family: "Inter"; font-style: normal; font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Inter"; font-style: normal; font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/inter-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Inter"; font-style: normal; font-weight: 600;
+    font-display: swap;
+    src: url("../fonts/inter-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500;
+    font-display: swap;
+    src: url("../fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
+/* ============================================================
+   Caroline Kim — portfolio stylesheet
+   Light, minimal, monospace-accented. Two-column shell:
+   sticky left rail (identity + nav + scroll-spy index) and a
+   scrolling content column of project blocks.
+   ============================================================ */
+
+:root {
+    --bg: #f2f4f8;            /* cool porcelain */
+    --bg-raised: #ffffff;
+    --ink: #14161b;
+    --ink-soft: #454a55;
+    /* 4.7:1 on the page background. The previous value sat at 3.2:1,
+       which fails WCAG AA for the 11-13px text it is used on. 5.3:1 now,
+       a little darker again because it reads small and light. */
+    --dim: #5d6572;
+    --hairline: #dde2ec;
+    --accent: #2749c9;
+    --tint: rgba(45, 62, 100, 0.058);      /* rail panel */
+    --pill: #e8ecf4;                        /* tag pill bases */
+    --pill-soft: #edf0f6;
+    --img-hover: #c3cad8;
+    --toggle-edge: #7f8a9e;                 /* 3.2:1 on the page background */
+    --wash-a: rgba(39, 73, 201, 0.08);      /* ambient washes */
+    --wash-b: rgba(109, 75, 216, 0.05);
+    --wash-c: rgba(14, 124, 102, 0.05);
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "Inter", -apple-system, "Segoe UI", sans-serif;
+
+    /* One reading measure for every prose block on the site — hero,
+       page intros, module overviews, figure captions. Holding them to a
+       single value means the left column reads as one edge instead of
+       several, and the paragraphs stop looking narrower than the content
+       they sit above. */
+    /* 660 rather than 720: at the wider value the text ran within about
+       twenty pixels of the ghost module numbers, which read as crowding
+       rather than as a deliberate gutter. */
+    --measure: 660px;
+}
+
+/* ---------- Dark theme ---------- */
+[data-theme="dark"] {
+    /* Deep blue-slate — dark with clear tone, never black. Translucent
+       hairlines and soft color glows give it depth and atmosphere. */
+    --bg: #212837;
+    --bg-raised: #2b3345;
+    --ink: #f2f4f8;
+    --ink-soft: #b9c1ce;
+    --dim: #939bab;                         /* 5.3:1 on the dark surface */
+    --hairline: rgba(220, 230, 255, 0.09);
+    --accent: #8ab4ff;
+    --tint: rgba(10, 14, 24, 0.35);
+    --pill: rgba(220, 230, 255, 0.055);
+    --pill-soft: rgba(220, 230, 255, 0.035);
+    --img-hover: rgba(220, 230, 255, 0.28);
+    --toggle-edge: #70798c;                 /* 3.4:1 on the dark surface */
+    --wash-a: rgba(86, 120, 255, 0.13);
+    --wash-b: rgba(150, 115, 255, 0.09);
+    --wash-c: rgba(40, 190, 155, 0.07);
+}
+[data-theme="dark"] { color-scheme: dark; }
+[data-theme="dark"] .area-data { --acc: #7da2ff; }
+[data-theme="dark"] .area-ml   { --acc: #3ed3b1; }
+[data-theme="dark"] .area-prod { --acc: #b8a1ff; }
+[data-theme="dark"] .module-ghost { opacity: 0.12; }
+[data-theme="dark"] body {
+    background: linear-gradient(180deg, #273040 0%, #212837 340px);
+}
+[data-theme="dark"] .module-strip img,
+[data-theme="dark"] .case-shots img { background: var(--bg-raised); }
+[data-theme="dark"] .rail-avatar { border-color: var(--hairline); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; overflow-anchor: none; }
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Soft ambient color wash — fixed, very low opacity, sits behind everything */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(900px 600px at 85% -5%,
+            var(--wash-a), transparent 65%),
+        radial-gradient(800px 550px at -5% 15%,
+            var(--wash-b), transparent 65%),
+        radial-gradient(1000px 700px at 50% 110%,
+            var(--wash-c), transparent 60%);
+}
+
+a { color: inherit; text-decoration: none; }
+.mono { font-family: var(--mono); font-size: 0.9em; }
+.mono-dim { font-family: var(--mono); color: var(--dim); font-size: 0.8em; }
+
+/* ---------- Shell layout ---------- */
+
+/* The whole site is a bounded "sheet" centered on the page — on wide
+   monitors you get equal neutral gutters on both sides instead of a
+   lopsided tinted field. Hairline edges define the sheet. */
+.shell {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+    gap: 56px;
+    border-left: 1px solid var(--hairline);
+    border-right: 1px solid var(--hairline);
+    min-height: 100vh;
+}
+
+/* ---------- Left rail ---------- */
+
+.rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 56px 36px 40px;
+    border-right: 1px solid var(--hairline);
+}
+
+/* Whisper-level tint on the rail column, contained inside the sheet so
+   the sidebar reads as its own panel. Translucent, so the ambient
+   gradient still shows through. */
+.rail::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--tint);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.rail-name {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+}
+.rail-name:hover { color: var(--accent); }
+
+.rail-role {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    margin-top: 6px;
+}
+
+.rail-heading {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    margin-bottom: 10px;
+}
+
+.rail-nav { margin-top: 44px; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.rail-nav ul { list-style: none; }
+.rail-nav li { margin-bottom: 2px; }
+.rail-nav a {
+    display: block;
+    padding: 3px 0;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    transition: color 0.15s;
+}
+.rail-nav a:hover { color: var(--ink); }
+.rail-nav a.active { color: var(--ink); font-weight: 600; }
+
+/* Module index nested under the Projects nav item — part of the
+   site-wide navigation on every page, not a Projects-only widget.
+   Starts open on the Projects page (it's the position tracker there),
+   collapsed elsewhere; the chevron toggles it in place. */
+.menu-projects { cursor: pointer; }
+
+.menu-sub.collapsed {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 4px;
+    pointer-events: none;
+}
+.menu-sub {
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin 0.3s ease;
+}
+.menu-sub {
+    list-style: none;
+    margin: 8px 0 12px 2px;
+    padding-left: 14px;
+    border-left: 1px solid var(--hairline);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* Never push Contact below the fold: the sub-list scrolls instead.
+       690px is the rest of the rail (portrait, name, menu items, presence
+       block and padding) measured at the point where it stops fitting. */
+    max-height: calc(100vh - 690px);
+}
+/* Floor only while open — a min-height on the collapsed state would hold
+   the rail open on every page where the index is closed. */
+.menu-sub:not(.collapsed) {
+    min-height: 96px;
+}
+.menu-sub a {
+    display: flex;
+    gap: 9px;
+    align-items: baseline;
+    padding: 2px 0;
+    font-size: 12px;
+    color: var(--dim);
+    transition: color 0.15s;
+}
+.menu-sub a:hover { color: var(--ink); }
+.menu-sub a.current { color: var(--ink); }
+.menu-sub a.current .idx-code { color: var(--acc, var(--accent)); }
+.idx-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--acc, var(--dim));
+    flex-shrink: 0;
+    align-self: center;
+    opacity: 0.75;
+}
+.idx-code { font-family: var(--mono); font-size: 10.5px; flex-shrink: 0; }
+.idx-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rail-bottom { margin-top: auto; padding-top: 28px; }
+/* Theme toggle: conventional top-right of the page */
+.theme-toggle {
+    position: absolute;
+    top: 26px;
+    right: 48px;
+    z-index: 5;
+    background: var(--pill);
+    /* A hairline border sat at 1.18:1 against the page, so the control had
+       no visible edge and read as a stray glyph rather than a button. WCAG
+       asks 3:1 for the boundary of a user-interface component; this clears
+       it, and the icon moves from muted to body ink. */
+    border: 1px solid var(--toggle-edge);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.theme-toggle .icon-moon, .theme-toggle .icon-sun { font-size: 13px; }
+.theme-toggle .theme-word { font-size: 11px; }
+.theme-toggle:hover {
+    color: var(--ink);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--pill));
+}
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+.rail-links { list-style: none; }
+.rail-links li { margin-bottom: 6px; }
+.rail-links a {
+    display: flex;
+    flex-direction: column;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+}
+.rail-links a:hover { color: var(--accent); }
+
+/* ---------- Content column ---------- */
+
+.content {
+    padding: 56px 48px 0 0;
+    min-width: 0;
+    position: relative;
+}
+
+.page-head { margin-bottom: 48px; max-width: var(--measure); }
+.page-head h1, .hero h1 {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+.page-sub { color: var(--ink-soft); font-size: 16.5px; }
+
+/* Gradient tick under page titles — small dose of color */
+.page-head h1::after, .hero h1::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 4px;
+    border-radius: 999px;
+    margin-top: 14px;
+    background: linear-gradient(90deg, #2749c9, #0e7c66 55%, #6d4bd8);
+}
+
+/* ---------- Project blocks ---------- */
+
+.modules { display: flex; flex-direction: column; }
+
+/* Focus-area hues — color means category, everywhere it appears */
+.area-data { --acc: #2749c9; }  /* Data engineering    — blue  */
+.area-ml   { --acc: #0e7c66; }  /* ML & modeling       — teal  */
+.area-prod { --acc: #6d4bd8; }  /* Production practice — violet */
+
+.module {
+    padding: 44px 0;
+    border-top: 1px solid var(--hairline);
+    scroll-margin-top: 24px;
+    position: relative;
+}
+
+/* Soft scroll-in: blocks fade and rise as they enter the viewport */
+@media (prefers-reduced-motion: no-preference) {
+    .module.reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .module.reveal.in { opacity: 1; transform: none; }
+}
+
+/* Large ghost module number, faint, behind the top-right of each block */
+/* Set in the body face, not the monospace one. A monospace font has to pad
+   its narrow glyphs out to a fixed cell, so "1" is a thin stem floating in a
+   wide empty box: beside a full round "0" at this size the pair reads as
+   half-blank, which is why 01 and the teens looked unlike 02-09. A
+   proportional face draws the 1 narrow and sets it narrow, so every numeral
+   carries comparable weight. */
+.module-ghost {
+    position: absolute;
+    /* Low enough that the focus area and date cross the top of the numeral
+       rather than its middle: the label should sit against the number, not
+       through it. */
+    top: 18px;
+    right: 0;
+    font-family: var(--sans);
+    font-size: 104px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    /* Tabular figures so every number occupies the same box and sits the
+       same distance behind the meta row above it. Proportional figures made
+       "01" narrower than "02", so its left edge started further right and it
+       overlapped the label less. This is safe here in a way it was not in
+       the monospace face: Inter draws a tabular 1 to fill its cell, rather
+       than centring a bare stem in it. */
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: 1;
+    color: var(--acc, var(--ink));
+    opacity: 0.07;
+    pointer-events: none;
+    user-select: none;
+}
+/* The first block needs less space above it, but taking that out of its
+   padding moved the ghost numeral with it - the numeral is positioned
+   against the block, so M01's sat 36px higher than every other one relative
+   to its label. Keeping the padding uniform and pulling the whole block up
+   by the same amount leaves the spacing identical and the numerals aligned. */
+/* first-of-type, not first-child: once the list carries section headings
+   the first block is no longer the container's first child, and the rule
+   would silently stop applying. */
+.modules > .module:first-of-type {
+    border-top: none;
+    padding-top: 44px;
+    margin-top: -36px;
+}
+
+/* Section headings appear only when the list holds more than one kind of
+   work, so they are absent until the first non-coursework entry lands. */
+.section-head {
+    margin: 56px 0 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+}
+.modules > .section-head:first-child { margin-top: 0; }
+.section-sub {
+    max-width: var(--measure);
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+}
+.section-head + .module,
+.section-sub + .module { border-top: none; }
+
+.module-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    /* Deliberately unbounded: the focus area and date carry on into the
+       gutter and sit over the ghost numeral, which is the effect that band
+       is there for. The labels are kept short enough that the overlap reads
+       as layering rather than collision. */
+    margin-bottom: 14px;
+}
+.module-code {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    color: var(--acc, var(--accent));
+    flex-shrink: 0;
+}
+.module-title {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+.module-area {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--acc, var(--dim));
+    flex-shrink: 0;
+}
+.module-date {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    flex-shrink: 0;
+}
+
+.js .module-head { cursor: pointer; }
+
+/* ---- Windowed accordion (JS only): the current module and its two
+   neighbors are open; everything else is folded. State changes happen
+   off-screen, so nothing near the reader ever moves. ---- */
+.js .module .module-fold {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.js .module.open .module-fold { grid-template-rows: 1fr; }
+.module-fold-inner { min-height: 0; overflow: hidden; }
+.js .module .module-fold-inner {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.5s ease 0.05s, transform 0.55s ease;
+}
+.js .module.open .module-fold-inner { opacity: 1; transform: none; }
+.no-anim-self .module-fold, .no-anim-self .module-fold-inner {
+    transition: none !important;
+}
+/* Fold height snaps, content still animates in — for above-arrivals. */
+.no-anim-fold .module-fold { transition: none !important; }
+.js .module:not(.open) { padding-bottom: 28px; }
+.js .module:not(.open) .module-head { margin-bottom: 0; }
+
+/* Everything in a module block stops at the shared measure, which leaves
+   a clear gutter down the right of the page for the ghost module number to
+   sit in. The number itself is positioned against the full column, so it
+   stays out there rather than following the text in. */
+.module-body { max-width: var(--measure); }
+.module-overview, .module-learned { max-width: var(--measure); }
+/* Justified with hyphenation on. Justification alone opens rivers of white
+   between words at this measure; letting the browser hyphenate keeps the
+   word spacing near normal while both edges stay flush, so each block ends
+   on a clean line against the gutter. */
+.module-overview, .module-learned, .page-sub, .hero-body {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    text-justify: inter-word;
+}
+/* Ragged-right on a phone. Justification needs enough words per line to
+   distribute the slack; at 350px it has four or five, so the spaces stretch
+   into visible rivers and hyphenation cannot absorb the difference. The
+   flush right edge is worth having only where it is free. */
+@media (max-width: 620px) {
+    .module-overview, .module-learned, .page-sub, .hero-body {
+        text-align: left;
+    }
+}
+.module-overview { color: var(--ink-soft); margin-bottom: 12px; }
+
+.module-learned {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    padding-left: 14px;
+    border-left: 2px solid color-mix(in srgb, var(--acc, var(--accent)) 40%, transparent);
+    margin-bottom: 18px;
+}
+.learned-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-right: 8px;
+}
+
+.module-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.module-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: color-mix(in srgb, var(--acc, var(--ink-soft)) 70%, var(--ink));
+    background: color-mix(in srgb, var(--acc, var(--pill)) 7%, var(--pill-soft));
+    border: 1px solid color-mix(in srgb, var(--acc, var(--hairline)) 22%, var(--hairline));
+    border-radius: 999px;
+    padding: 2.5px 10px;
+    white-space: nowrap;
+}
+.module-links {
+    margin-left: auto;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+.module-link {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--acc, var(--accent));
+    white-space: nowrap;
+}
+.module-live {
+    border: 1px solid color-mix(in srgb, var(--acc, var(--accent)) 45%, transparent);
+    border-radius: 999px;
+    padding: 3px 12px;
+}
+.module-live:hover {
+    background: color-mix(in srgb, var(--acc, var(--accent)) 10%, transparent);
+    text-decoration: none !important;
+}
+.module-link:hover { text-decoration: underline; }
+.tag:hover { border-color: color-mix(in srgb, var(--acc, var(--accent)) 55%, transparent); }
+
+/* Horizontal, scrollable screenshot strip */
+/* A uniform grid rather than a fixed-height scrolling row. Screenshots
+   here range from 1100x214 to 1100x4344, so a shared row height turned
+   tall images into slivers (48px wide in one case) and pushed seven of
+   the thirteen strips past the column edge, clipping the last image.
+   Equal tiles fill the width instead; each crops from the top, where a
+   screenshot carries its title, and clicking opens the full image. */
+/* Screenshots are contact-sheet thumbnails, not the artefact itself:
+   small, uniform, one row, click to see the real thing. The sources vary
+   from a 4:1 banner to a full-page capture four thousand pixels tall, so
+   the tile is a fixed frame and the image is fitted inside it rather than
+   cropped to fill it — cropping to a common ratio is what was slicing the
+   tall captures in half. Letterboxing costs a little empty frame and
+   never hides content. */
+.module-strip {
+    display: flex;
+    /* Never wrap: on a phone a third tile dropped to its own row and the
+       strip stopped reading as one contact sheet. The tiles shrink to fit
+       the width instead, and the lightbox carries the detail. */
+    flex-wrap: nowrap;
+    gap: 10px;
+    max-width: var(--measure);
+    margin-top: 22px;
+    contain: layout paint;
+}
+/* The tile is the figure now, so the caption travels with its image and
+   the row stays even whether a label wraps or not. */
+.shot { flex: 1 1 0; min-width: 0; max-width: 172px; }
+.shot-cap {
+    margin-top: 6px;
+    font-family: var(--mono);
+    /* Fixed: the tiles shrink on narrow screens, the labels do not, because
+       at that size the label is the only thing telling you what you are
+       looking at. */
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: var(--dim);
+    line-height: 1.35;
+}
+.module-strip img, .case-shots img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: contain;
+    padding: 5px;
+    border: 1px solid var(--hairline);
+    border-radius: 9px;
+    background: var(--bg-raised);
+    transition: border-color 0.15s, transform 0.2s, box-shadow 0.2s;
+}
+/* Full-page captures: fitting a 1:4 image inside a 16:10 tile leaves a
+   sliver nobody can read, so these show the top of the page instead — the
+   same thing a browser's page preview does. Click still opens the whole
+   image. */
+.module-strip img.thumb-crop, .case-shots img.thumb-crop {
+    object-fit: cover;
+    object-position: top center;
+    padding: 0;
+}
+.module-strip img:hover, .case-shots img:hover {
+    border-color: color-mix(in srgb, var(--acc, var(--accent)) 45%, var(--img-hover));
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px -14px rgba(25, 24, 23, 0.28);
+}
+
+/* ---------- Home ---------- */
+
+.hero {
+    display: flex;
+    gap: 56px;
+    align-items: flex-start;
+    padding-bottom: 56px;
+}
+/* Prose sits at a 620px measure — roughly 70 characters a line — while
+   the grids below run the full column. Both prose blocks share the value
+   so the left column reads as one edge rather than two. */
+.hero-text { max-width: var(--measure); }
+/* The skills and focus grids are held to the same measure as the prose
+   above them. Left at full column width they made the hero read as a
+   narrow paragraph beside a wide page; matching them gives the home page
+   the single right edge every other page has. */
+.home-section { max-width: var(--measure); }
+.hero-kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    margin-bottom: 12px;
+}
+.hero-lede { font-size: 16px; font-weight: 500; color: var(--ink-soft); margin: 6px 0 16px; }
+.hero-body { font-size: 16px; color: var(--ink-soft); margin-bottom: 26px; }
+
+/* Portrait in the left rail */
+.rail-avatar {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+    margin-bottom: 16px;
+    display: block;
+}
+
+.btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--bg);
+    margin-right: 10px;
+    transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+}
+
+.home-section { padding: 40px 0; border-top: 1px solid var(--hairline); }
+.home-heading {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    margin-bottom: 20px;
+}
+.focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+.focus-item {
+    border-top: 3px solid color-mix(in srgb, var(--acc, var(--hairline)) 55%, transparent);
+    padding-top: 14px;
+}
+.focus-title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.focus-item p { font-size: 14px; color: var(--ink-soft); }
+
+/* ---------- Contact ---------- */
+
+/* Full column, so the rows finish on the same edge as the footer rule
+   below them rather than stopping short of it. */
+/* Bounded rather than full-bleed, at the same measure as the page intro
+   above it: the rows and the paragraph share a right edge and the column
+   ends well short of the sheet, the way a case study does. */
+.contact-list { max-width: var(--measure); }
+
+.contact-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: var(--pill-soft);
+    border: 1px solid var(--hairline);
+    color: var(--ink-soft);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.contact-icon svg { width: 17px; height: 17px; display: block; }
+.contact-row:hover .contact-icon {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    color: var(--accent);
+}
+.contact-arrow { transition: transform 0.15s; }
+.contact-row:hover .contact-arrow { transform: translateX(3px); }
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+    transition: color 0.15s;
+}
+.contact-row:last-child { border-bottom: 1px solid var(--hairline); }
+.contact-row:hover { color: var(--accent); }
+.contact-label {
+    /* Wide enough for the longest label on one line; wrapping it made that
+       row taller than the others. */
+    width: 110px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--dim);
+}
+.contact-value { font-size: 15.5px; }
+.contact-arrow { margin-left: auto; font-family: var(--mono); }
+
+/* ---------- Page navigation ---------- */
+
+/* Previous / next at the foot of every page. After a long scroll the rail
+   is far above the reader - on a phone it is a whole page away - so the way
+   on to the next page belongs where the current one ends. */
+.pagenav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: var(--measure);
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+}
+.pagenav a {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+    padding: 6px 0;
+    transition: color 0.15s;
+}
+.pagenav a:hover { color: var(--accent); }
+.pagenav-next { margin-left: auto; text-align: right; }
+.pagenav-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    /* No opacity: fading muted ink over the page background took it from
+       5.3:1 to about 3.7:1, which fails AA. Size and letter-spacing already
+       separate the label from the link beneath it. */
+    margin-bottom: 2px;
+}
+
+/* ---------- Footer ---------- */
+
+/* Both ends in the same face. One side was set in the body font and the
+   other in the mono meta style, so a single row read as two. */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 36px 0 40px;
+    border-top: 1px solid var(--hairline);
+    margin-top: 56px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+}
+
+/* ---------- Responsive ---------- */
+
+/* ---------- Tablet & phone ----------
+   The rail becomes a compact header: identity on one line, menu inline,
+   the module index hidden (the page itself is the index at this width),
+   and presence links wrapped into a single row. Without this the nav
+   alone can run past a full screen before any content appears. */
+@media (max-width: 900px) {
+    .shell {
+        grid-template-columns: 1fr;
+        gap: 0;
+        border-left: none;
+        border-right: none;
+        padding: 0 20px;
+    }
+    .rail::before { display: none; }
+    .content { padding: 24px 0 0; }
+    .rail {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--hairline);
+        padding: 24px 0 18px;
+        display: block;
+    }
+
+    /* identity: avatar beside the name instead of stacked */
+    /* avatar on the left, name over role on the right */
+    .rail-top {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 0 14px;
+        align-items: center;
+    }
+    .rail-avatar {
+        grid-row: 1 / 3;
+        width: 54px;
+        height: 54px;
+        margin-bottom: 0;
+    }
+    .rail-name { font-size: 14px; }
+    .rail-role { margin-top: 3px; font-size: 10px; }
+
+    /* menu inline; the module sub-index is redundant at this width */
+    .rail-nav { margin-top: 18px; overflow: visible; }
+    .rail-nav > ul { display: flex; gap: 22px; }
+    .rail-nav li { margin-bottom: 0; }
+    .rail-heading { display: none; }
+    .menu-sub { display: none !important; }
+
+    /* presence links: one row of labels, handles hidden */
+    .rail-bottom { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+    .rail-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+    .rail-links li { margin-bottom: 0; }
+    .rail-links a { font-size: 13px; }
+    .rail-links .mono-dim { display: none; }
+
+    .theme-toggle { top: 22px; right: 0; }
+
+    .hero { flex-direction: column-reverse; }
+    .focus-grid { grid-template-columns: 1fr; }
+    .module-head { flex-wrap: wrap; }
+    .module-area { margin-left: 0; }
+    .module-date { width: auto; }
+    .module-ghost { font-size: 72px; top: 16px; }
+    .figure-cap { font-size: 14px; }
+}
+
+/* Phone: tighten further and drop to a single column everywhere. */
+@media (max-width: 560px) {
+    .shell { padding: 0 16px; }
+    .page-head h1, .hero h1 { font-size: 27px; }
+    .module-title { font-size: 18px; }
+    .shot { max-width: 148px; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .stat-num { font-size: 22px; }
+    .rail-nav > ul { gap: 18px; }
+    .module-ghost { display: none; }
+    .lightbox { padding: 2vh 3vw; }
+    /* Narrowest phones: hold each row to one line and let the long values
+       truncate. Wrapping instead pushed the arrow onto its own line, which
+       made the LinkedIn row taller than the three beside it. */
+    .contact-row { flex-wrap: nowrap; gap: 12px; }
+    .contact-label { width: auto; }
+    .contact-value {
+        font-size: 15px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+
+/* ---------- Lightbox ---------- */
+.module-strip img, .case-shots img { cursor: zoom-in; }
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(12, 16, 26, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    cursor: zoom-out;
+    padding: 4vh 4vw;
+}
+.lightbox.show { opacity: 1; pointer-events: auto; }
+.lightbox img {
+    /* The element carries width/height attributes so the box is reserved
+       before the full image arrives; auto here lets the constraints below
+       scale it without distorting the ratio. */
+    width: auto;
+    height: auto;
+    max-width: 92vw;
+    max-height: 84vh;
+    border-radius: 10px;
+    box-shadow: 0 24px 80px -12px rgba(0, 0, 0, 0.6);
+    background: #fff;
+}
+.lightbox-cap {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: rgba(235, 240, 250, 0.85);
+    text-align: center;
+}
+
+/* ---------- Tag filter ---------- */
+.module-tags .tag { cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
+.module-tags .tag.active {
+    background: var(--acc, var(--accent));
+    color: #fff;
+    border-color: var(--acc, var(--accent));
+}
+/* While a filter is on, the list reserves a screen of height. A tag that
+   matches one project leaves the page too short to scroll the filter bar up
+   to the top, so the reader landed mid-page with the bar still below the
+   fold - which read as "it jumped me somewhere for no reason". */
+/* The dataset band is context for the whole list, not for a filtered
+   subset, and it is tall enough to push the filter bar below the fold on
+   arrival. Hidden while a filter is on, the bar and its results sit at the
+   top of the page where the reader is already looking. */
+body.filtering .dataset-band { display: none; }
+body.filtering .modules { min-height: calc(100vh - 96px); }
+/* Restoring the reader's position after a filter is cleared has to happen
+   against final heights. With the fold transitions live, the blocks above
+   keep growing for half a second after the scroll is set and it drifts. */
+.modules.no-anim, .modules.no-anim * { transition: none !important; }
+
+.filter-bar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+.filter-bar.show { display: flex; }
+.filter-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px solid var(--hairline);
+    background: var(--pill);
+    border-radius: 999px;
+    padding: 3px 12px;
+    color: var(--ink);
+}
+.filter-clear {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: none;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 3px 12px;
+    color: var(--dim);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.filter-clear:hover { color: var(--ink); border-color: var(--img-hover); }
+
+/* Tag buttons: reset native button chrome, keep the pill look */
+button.tag { -webkit-appearance: none; appearance: none; line-height: 1.65; }
+.tag:focus-visible, .filter-clear:focus-visible, .theme-toggle:focus-visible,
+.menu-sub a:focus-visible, .module-strip img:focus-visible,
+.case-shots img:focus-visible {
+    outline: 2px solid var(--acc, var(--accent));
+    outline-offset: 2px;
+}
+
+/* Skip link — visible only when focused by keyboard */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 12px;
+    z-index: 100;
+    background: var(--bg-raised);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--ink);
+}
+.skip-link:focus { left: 16px; }
+
+/* ---------- Dataset figures (stat row + chart) ---------- */
+/* The band holds the same measure as the prose rather than stretching to
+   the full column: four figures spread across 850px read as a toolbar,
+   the same four packed into 720 read as one statement, and the whitespace
+   left over on the right is what gives them their weight. */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    max-width: var(--measure);
+    margin-bottom: 40px;
+}
+.stat-num {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+.stat-label { font-size: 13px; color: var(--dim); line-height: 1.45; }
+
+/* Heading, figures, caption, chart and provenance all stop at the same
+   right edge, so the band reads as one object. */
+.figure, .figure-cap, .figure-src { max-width: var(--measure); }
+.figure-cap {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+.figure-cap strong { color: var(--ink); font-weight: 600; }
+/* Provenance sits in the body face like the caption above it; only the
+   filenames stay monospaced, because they are literal names on disk. */
+.figure-src {
+    margin-top: 10px;
+    font-size: 12px;
+    font-family: var(--sans);
+    color: var(--dim);
+    line-height: 1.5;
+}
+.figure-src code { font-family: var(--mono); font-size: 0.92em; }
+
+.chart { width: 100%; height: auto; overflow: visible; }
+.chart .grid { stroke: var(--hairline); stroke-width: 1; }
+.chart .axis {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    fill: var(--dim);
+}
+.chart .line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.chart .area { fill: var(--accent); opacity: 0.10; }
+.chart .dot {
+    fill: var(--bg);
+    stroke: var(--accent);
+    stroke-width: 2;
+}
+.chart .hit { fill: transparent; cursor: pointer; }
+
+/* hover layer */
+.chart .tip { opacity: 0; pointer-events: none; transition: opacity 0.12s; }
+.chart .tip rect {
+    fill: var(--ink);
+    opacity: 0.94;
+}
+.chart .tip text {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    fill: var(--bg);
+}
+.chart .tip .tip-sub { opacity: 0.7; font-size: 8.5px; }
+.chart .pt:hover .tip, .chart .pt:focus-visible .tip { opacity: 1; }
+.chart .pt:hover .dot, .chart .pt:focus-visible .dot { r: 5; }
+.chart .pt:focus-visible { outline: none; }
+.chart .pt:focus-visible .dot { stroke-width: 3; }
+
+@media (max-width: 900px) {
+    .stat-row { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+}
+
+/* ---------- Live demo embed (click to load) ---------- */
+.embed { margin-top: 20px; }
+.embed-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 11px 16px;
+    border: 1px solid color-mix(in srgb, var(--acc, var(--accent)) 40%, var(--hairline));
+    background: color-mix(in srgb, var(--acc, var(--accent)) 6%, transparent);
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--ink);
+    font: inherit;
+    transition: background 0.15s, border-color 0.15s;
+}
+.embed-cta:hover {
+    background: color-mix(in srgb, var(--acc, var(--accent)) 12%, transparent);
+    border-color: var(--acc, var(--accent));
+}
+.embed-play {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--acc, var(--accent));
+    color: #fff;
+    font-size: 12px;
+    padding-left: 2px;
+}
+.embed-label { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.3; }
+.embed-note {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 2px;
+}
+.embed-caveat {
+    max-width: var(--measure);
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--dim);
+}
+.embed.loaded { border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; }
+/* The frame is sized to the app rather than the app squeezed into the
+   frame: a scrollbar inside a scrolling page is the pattern this embed
+   exists to avoid. Each value is the demo's own measured height at that
+   breakpoint, with a few pixels of headroom. Keeping this under a laptop
+   viewport is what lets the whole app arrive on screen when the reader
+   opens it. */
+.embed { max-width: var(--measure); }
+.embed iframe {
+    display: block;
+    width: 100%;
+    height: 850px;
+    border: 0;
+    background: var(--bg-raised);
+}
+/* The demo lays its answer beside its form only above ~760px. The frame is
+   660px wide here, so the embedded copy always runs stacked and needs the
+   stacked height — 827px measured at this width, plus headroom. Sizing it
+   to the side-by-side height is what was cropping the result card. On a
+   phone the fields wrap further and the app grows to 881px. */
+@media (max-width: 900px) { .embed iframe { height: 900px; } }
+
+
+/* ---------- Core skills (featured, with proof) ---------- */
+.stack-intro { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 22px; }
+/* Each column is a subgrid of the outer rows, so the three skills in a row
+   share a height and the next one starts level across all three columns.
+   Without it a two-line proof beside a three-line one pushed the rest of
+   that column up and the rows stopped lining up. Browsers without subgrid
+   fall back to the previous independent columns. */
+.skills-grid {
+    display: grid;
+    /* minmax(0, 1fr), not 1fr: a plain 1fr floors at the column's content
+       width, so the shortest proof lines let one column collapse to 83px
+       while its neighbours took 270. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto repeat(3, auto);
+    column-gap: 26px;
+}
+.skills-col {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+}
+.skills-col-head {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--acc, var(--dim));
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid color-mix(in srgb, var(--acc, var(--accent)) 45%, transparent);
+}
+.skill {
+    display: block;
+    padding: 9px 0 11px;
+    border-bottom: 1px solid var(--hairline);
+    transition: padding-left 0.18s ease;
+}
+.skill:last-child { border-bottom: none; }
+.skill:hover { padding-left: 6px; }
+.skill-name {
+    display: block;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: var(--ink);
+    margin-bottom: 3px;
+}
+.skill:hover .skill-name { color: var(--acc, var(--accent)); }
+.skill-proof {
+    display: block;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--dim);
+}
+
+/* the long tail — present, deliberately quiet */
+.skills-rest {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--hairline);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--dim);
+    /* Flex-wrap, not inline flow: the items are rendered without
+       whitespace between them, so inline layout finds no break
+       opportunity and runs of names overflow narrow screens. */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+.skills-rest-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-right: 10px;
+}
+.skills-rest-item { color: var(--ink-soft); }
+.skills-rest-item:hover { color: var(--accent); }
+/* The separator is drawn inside each item rather than as its own element:
+   as a sibling it became a flex item of its own and could wrap to the start
+   of a line, indenting every row after the first. */
+.skills-rest-item:not(:last-child)::after {
+    content: "\00B7";
+    margin: 0 7px;
+    opacity: 0.45;
+}
+
+@media (max-width: 900px) {
+    .stat-row { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    /* One column below 900: the subgrid has to be released too, or all
+       three columns stack into the same grid row and overlap. */
+    .skills-grid { grid-template-columns: 1fr; grid-template-rows: none; gap: 22px; }
+    .skills-col { grid-row: auto; grid-template-rows: none; display: block; }
+}
+
+/* ============================================================
+   Case-study page
+   A long-form read for the flagship projects: problem, approach,
+   challenges, results. Narrow measure, generous vertical rhythm,
+   and the project's focus-area hue carried through as --acc.
+   ============================================================ */
+
+/* The case study reads at the same measure as every other page, so a
+   reader moving between them never sees the column change width. */
+.case { max-width: var(--measure); padding-bottom: 40px; }
+
+.case-back {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    display: inline-block;
+    margin-bottom: 30px;
+}
+.case-back:hover { color: var(--accent); }
+
+.case-head { margin-bottom: 38px; }
+
+.case-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    margin-bottom: 14px;
+}
+.case-code { color: var(--acc, var(--accent)); }
+.case-area::before,
+.case-date::before {
+    content: "·";
+    margin-right: 12px;
+    opacity: 0.55;
+}
+
+.case-head h1 {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+.case-head h1::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 4px;
+    border-radius: 999px;
+    margin-top: 14px;
+    background: linear-gradient(90deg,
+        var(--acc, var(--accent)),
+        color-mix(in srgb, var(--acc, var(--accent)) 30%, transparent));
+}
+
+.case-summary {
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+}
+
+.case-actions { display: flex; gap: 0; flex-wrap: wrap; }
+
+/* ---- Results band: the numbers, up front ---- */
+.case-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 46px;
+}
+.case-result { background: var(--bg-raised); padding: 18px 16px; }
+.case-result-value {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--acc, var(--accent));
+    line-height: 1.1;
+}
+.case-result-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+.case-result-note {
+    font-size: 12px;
+    color: var(--dim);
+    line-height: 1.5;
+    margin-top: 2px;
+}
+
+/* ---- Body sections ---- */
+/* Case-study screenshots. The projects strip holds one row and shrinks its
+   tiles to fit; here there is no row to keep, so the tiles hold a readable
+   size and wrap onto as many rows as the set needs. Two across at the
+   reading measure, one on a phone. */
+.case-shots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    /* Figures run wider than the prose. The measure exists to keep lines
+       readable, which a chart does not need, and the case column has room
+       to the right of it; holding the screenshots to the text width made
+       them smaller than the detail in them can survive. Capped at the
+       column so they still finish on a shared edge. */
+    width: 100%;
+    max-width: var(--measure);
+    margin-top: 22px;
+}
+/* Above this width the case column has room to the right of the measure,
+   so the figures take it. A block child cannot outgrow its container by
+   max-width alone - the width has to be stated - and below the breakpoint
+   there is no room to state, so the grid falls back to the text width. */
+@media (min-width: 1240px) {
+    .case-shots { width: 820px; max-width: none; }
+}
+.case-shots .shot { max-width: none; }
+.case-shots .shot-cap { font-size: 11.5px; margin-top: 8px; }
+
+.case-section {
+    padding-top: 30px;
+    margin-top: 30px;
+    border-top: 1px solid var(--hairline);
+}
+.case-section:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.case-section h2 {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 14px;
+}
+.case-section p { color: var(--ink-soft); }
+
+.case-steps {
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.case-steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 34px;
+    color: var(--ink-soft);
+}
+.case-steps li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--acc, var(--accent));
+    opacity: 0.75;
+}
+
+/* ---- Challenge / solution pairs ---- */
+.case-challenge {
+    padding-left: 16px;
+    border-left: 2px solid color-mix(in srgb,
+        var(--acc, var(--accent)) 35%, transparent);
+    margin-bottom: 24px;
+}
+.case-challenge:last-child { margin-bottom: 0; }
+.case-problem {
+    color: var(--ink) !important;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+.case-solution { font-size: 15px; }
+.case-solution-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 2px;
+}
+
+.case-reflection { font-size: 16px; }
+
+/* ---- Previous / next ---- */
+.case-nav {
+    display: flex;
+    gap: 16px;
+    margin-top: 52px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+}
+.case-nav-link {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    transition: border-color 0.15s, transform 0.15s;
+}
+.case-nav-next { text-align: right; }
+.case-nav-link:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--hairline));
+    transform: translateY(-2px);
+}
+.case-nav-dir {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 3px;
+}
+.case-nav-title {
+    display: block;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.35;
+}
+
+/* Entry point from the projects list */
+.module-case {
+    font-weight: 500;
+    border-bottom: 1px solid color-mix(in srgb,
+        var(--acc, var(--accent)) 40%, transparent);
+}
+.module-case:hover { text-decoration: none !important; }
+
+@media (max-width: 900px) {
+    .case-head h1 { font-size: 27px; }
+    .case-summary { font-size: 16px; }
+    .case-results { grid-template-columns: repeat(2, 1fr); }
+    .case-nav { flex-direction: column; }
+    .case-nav-next { text-align: left; }
+}
+@media (max-width: 560px) {
+    .case-results { grid-template-columns: 1fr; }
+    .case-actions .btn { margin-right: 8px; margin-bottom: 8px; }
+}
+
+/* ---------- Dataset band (top of Projects) ----------
+   Frames the list: every project below is built on the same records.
+   Styled as its own band rather than a page section so it can be
+   relocated later without inheriting home-page spacing. */
+.dataset-band {
+    padding: 30px 0 32px;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 26px;
+}
+.dataset-band .figure { margin-top: 26px; }
+
+/* ---------- Short viewports (laptops, iPad landscape) ----------
+   The rail's fixed furniture — portrait, padding, presence handles —
+   costs ~690px, which is more than a 768px-tall laptop screen can
+   spare once the module index is in it. Below that height the rail
+   trims itself rather than quietly scrolling Contact out of view.
+   Width-gated to 901px+ so it never fights the mobile layout. */
+@media (min-width: 901px) and (max-height: 860px) {
+    .rail { padding-top: 32px; }
+    .rail-avatar { width: 64px; height: 64px; margin-bottom: 10px; }
+    .rail-nav { margin-top: 24px; }
+    .rail-bottom { padding-top: 16px; }
+    .rail-links li { margin-bottom: 2px; }
+    .rail-links .mono-dim { display: none; }   /* @handles: label is enough */
+    .menu-sub { max-height: calc(100vh - 530px); }
+}
+
+/* ---------- Code excerpt on case studies ----------
+   The repository is private, so the case study carries the load-bearing
+   code inline rather than linking to something a visitor cannot open. */
+.code {
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: var(--pill-soft);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--acc, var(--accent));
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    tab-size: 4;
+}
+.code code { font: inherit; white-space: pre; }
+.code-note {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--dim) !important;
+}
+@media (max-width: 560px) { .code { font-size: 11.5px; padding: 12px 13px; } }
+.module-private, .btn-static {
+    color: var(--dim);
+    cursor: default;
+}
+.btn-static { border-style: dashed; }

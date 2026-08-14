@@ -1,0 +1,649 @@
+{
+  "sections": [
+    {
+      "key": "project",
+      "label": "Selected work",
+      "blurb": ""
+    },
+    {
+      "key": "coursework",
+      "label": "Coursework",
+      "blurb": ""
+    }
+  ],
+  "modules": [
+    {
+      "id": 1,
+      "code": "M01",
+      "title": "Personal Portfolio Website",
+      "date": "May 2026",
+      "tags": [
+        "Python",
+        "Flask",
+        "Jinja",
+        "gunicorn",
+        "CSS"
+      ],
+      "overview": "A personal portfolio site built with Flask from scratch — application-factory pattern, blueprint-based routing, Jinja template inheritance, and an external stylesheet. The site you are reading right now, rebuilt at the end of the course as the final project portfolio.",
+      "learned": "How to structure a Flask application properly from day one — factories, blueprints, and template inheritance — instead of one big script.",
+      "images": [
+        "module_1/site_home.webp",
+        "module_1/site_projects.webp"
+      ],
+      "area_key": "prod",
+      "area": "Production Craft",
+      "image_dims": [
+        [
+          1100,
+          687
+        ],
+        [
+          1100,
+          687
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Home",
+        "Projects"
+      ],
+      "source": {
+        "label": "Read the source",
+        "url": "https://github.com/kxcaroline/portfolio"
+      }
+    },
+    {
+      "id": 2,
+      "code": "M02",
+      "title": "Web Scraping — Grad Café Applicant Data",
+      "date": "May 2026",
+      "tags": [
+        "Selenium",
+        "BeautifulSoup",
+        "urllib",
+        "JSON"
+      ],
+      "overview": "A robots.txt-compliant scraper that collects ~100,000 graduate-admissions results from thegradcafe.com using a hybrid urllib + headless-Selenium + BeautifulSoup workflow, then parses, validates, and deduplicates them into a clean JSON dataset.",
+      "learned": "That real-world scraping is mostly engineering around the messiness — JavaScript-rendered pages, explicit waits, field validation, and reproducibility — not the parsing itself.",
+      "images": [
+        "module_2/robots_check.webp"
+      ],
+      "area_key": "data",
+      "area": "Data Engineering",
+      "image_dims": [
+        [
+          918,
+          1209
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "robots.txt Check"
+      ]
+    },
+    {
+      "id": 3,
+      "code": "M03",
+      "title": "Databases — PostgreSQL + GradScope Dashboard",
+      "date": "Jun 2026",
+      "tags": [
+        "PostgreSQL",
+        "SQL",
+        "Flask",
+        "psycopg"
+      ],
+      "overview": "Loads the Module 2 Grad Café dataset into PostgreSQL, answers a set of analysis questions in SQL, and serves the results on a dynamic Flask dashboard (\"GradScope\") with Pull Data and Update Analysis actions guarded by concurrency control.",
+      "learned": "How to design idempotent data loads and guard shared state — the busy-lock pattern that keeps a scrape and a recompute from stepping on each other.",
+      "images": [
+        "module_3/webpage_dashboard.webp",
+        "module_3/console_output.webp"
+      ],
+      "area_key": "data",
+      "area": "Data Engineering",
+      "image_dims": [
+        [
+          1100,
+          2513
+        ],
+        [
+          1100,
+          607
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Dashboard",
+        "Console Output"
+      ]
+    },
+    {
+      "id": 4,
+      "code": "M04",
+      "title": "Testing & Documentation",
+      "date": "Jun 2026",
+      "tags": [
+        "pytest",
+        "GitHub Actions",
+        "Sphinx",
+        "Read the Docs"
+      ],
+      "overview": "Makes the Grad Café analytics service test-driven and documented without changing its behavior: a pytest suite at 100% coverage organized with markers, run in GitHub Actions against a real PostgreSQL service, plus Sphinx documentation published to Read the Docs.",
+      "learned": "That 100% coverage is less about the number and more about the discipline — every branch I had to reach taught me something about my own design.",
+      "images": [
+        "module_4/actions_success.webp"
+      ],
+      "area_key": "prod",
+      "area": "Production Craft",
+      "live": {
+        "label": "Live docs",
+        "url": "https://jhu-software-concepts-ckim179.readthedocs.io/"
+      },
+      "image_dims": [
+        [
+          1100,
+          807
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "CI Run"
+      ]
+    },
+    {
+      "id": 5,
+      "code": "M05",
+      "title": "Software Assurance & Secure SQL",
+      "date": "Jun 2026",
+      "tags": [
+        "Pylint",
+        "Snyk",
+        "SQL",
+        "CI"
+      ],
+      "overview": "Hardens the existing service to a software-assurance standard: 10.00/10 Pylint with errors resolved rather than silenced, injection-safe parameterized SQL via psycopg composition, a least-privilege database role, a dependency graph, reproducible packaging, and a Snyk supply-chain scan — all enforced in CI.",
+      "learned": "How to think like an attacker about my own queries, and why least-privilege access is cheap insurance you set up once and benefit from forever.",
+      "images": [
+        "module_5/snyk_analysis.webp",
+        "module_5/least-privilege-proof.webp"
+      ],
+      "area_key": "prod",
+      "area": "Production Craft",
+      "image_dims": [
+        [
+          789,
+          243
+        ],
+        [
+          814,
+          239
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Snyk Scan",
+        "Least Privilege"
+      ],
+      "source": {
+        "label": "Read the database layer",
+        "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_05-database"
+      }
+    },
+    {
+      "id": 6,
+      "code": "M06",
+      "title": "Containerization & Messaging",
+      "date": "Jul 2026",
+      "tags": [
+        "Docker Compose",
+        "RabbitMQ",
+        "SQLAlchemy",
+        "Alembic",
+        "Prometheus",
+        "Flask"
+      ],
+      "overview": "Refactors the service into containerized microservices — Flask web tier, RabbitMQ broker, background worker, PostgreSQL, and an optional LLM inference service — where button clicks publish tasks and return 202 immediately, and the whole stack runs reproducibly with one compose command.",
+      "learned": "The value of decoupling: once the web tier stopped doing long-running work itself, deployment, scaling, and failure-handling all got simpler at once.",
+      "images": [
+        "module_6/compose_dashboard.webp",
+        "module_6/rabbitmq_management.webp"
+      ],
+      "area_key": "prod",
+      "area": "Production Craft",
+      "image_dims": [
+        [
+          1100,
+          823
+        ],
+        [
+          1100,
+          823
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Compose Stack",
+        "RabbitMQ"
+      ],
+      "source": {
+        "label": "Read the container stack",
+        "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_06-containers"
+      }
+    },
+    {
+      "id": 7,
+      "code": "M07",
+      "title": "Cloud Computing — S3, SageMaker, EC2",
+      "date": "Jul 2026",
+      "tags": [
+        "AWS",
+        "boto3",
+        "S3",
+        "SageMaker",
+        "EC2"
+      ],
+      "overview": "Two AWS workflows: a boto3 pipeline that pulls the Grad Café dataset from a private S3 bucket into a SageMaker notebook, and the full Module 6 microservice stack deployed to an EC2 instance with Docker Compose using published images.",
+      "learned": "How the pieces of a real cloud deployment fit together — IAM, security groups, and credentials management turned out to matter as much as the code.",
+      "images": [
+        "module_7/ec2-app.webp",
+        "module_7/liveNotebook.webp",
+        "module_7/grad-cafe-bucket.webp"
+      ],
+      "area_key": "prod",
+      "area": "Production Craft",
+      "image_dims": [
+        [
+          1100,
+          436
+        ],
+        [
+          1100,
+          184
+        ],
+        [
+          1100,
+          407
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "EC2 App",
+        "Notebook",
+        "S3 Bucket"
+      ]
+    },
+    {
+      "id": 8,
+      "code": "M08",
+      "title": "Data Preparation & Statistics",
+      "date": "Jul 2026",
+      "tags": [
+        "pandas",
+        "NumPy",
+        "SciPy",
+        "Matplotlib",
+        "reportlab"
+      ],
+      "overview": "A cleaning and exploratory-analysis workflow over the ~100k-row Grad Café dataset: every cleaning rule records what it dropped or coerced in an audit ledger (99,941 → 96,948 rows), followed by SciPy statistics, Matplotlib visualizations, and a cleaned write-back to S3.",
+      "learned": "To make data cleaning auditable — a ledger of every dropped row changed how much I trust (and can defend) the downstream analysis.",
+      "images": [
+        "module_8/GPA-vs-GRE.webp",
+        "module_8/Acceptances-over-Time.webp",
+        "module_8/GPA-by-Outcome.webp",
+        "module_8/Numeric-Correlation-Heatmap.webp"
+      ],
+      "area_key": "data",
+      "area": "Data Engineering",
+      "image_dims": [
+        [
+          1100,
+          481
+        ],
+        [
+          1100,
+          528
+        ],
+        [
+          1036,
+          782
+        ],
+        [
+          961,
+          774
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "GPA vs GRE",
+        "Over Time",
+        "By Outcome",
+        "Ledger"
+      ]
+    },
+    {
+      "id": 9,
+      "code": "M09",
+      "title": "K-Means Clustering of Program Names",
+      "date": "Jul 2026",
+      "tags": [
+        "scikit-learn",
+        "TF-IDF",
+        "PCA",
+        "K-Means"
+      ],
+      "overview": "Groups 5,861 messy, differently-entered graduate program names (\"Business and Economics\" vs \"Business Economics\") into a smaller set of coherent program areas using TF-IDF vectorization, PCA dimensionality reduction, and K-Means clustering.",
+      "learned": "How much of applied ML is representation: the clustering only became meaningful once the text vectorization and dimensionality were right.",
+      "images": [
+        "module_9/elbow.webp",
+        "module_9/initial_cluster.webp",
+        "module_9/computer_science.webp"
+      ],
+      "area_key": "ml",
+      "area": "ML & Modeling",
+      "image_dims": [
+        [
+          1100,
+          660
+        ],
+        [
+          1100,
+          770
+        ],
+        [
+          1100,
+          825
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Elbow Curve",
+        "First Clusters",
+        "CS Cluster"
+      ]
+    },
+    {
+      "id": 10,
+      "code": "M10",
+      "title": "Immuno-Oncology Clinical-Trial Pipeline",
+      "date": "Jul 2026",
+      "tags": [
+        "ClinicalTrials.gov",
+        "NCI Thesaurus",
+        "Plotly",
+        "statsmodels",
+        "Label Studio",
+        "pandas"
+      ],
+      "overview": "A reproducible pipeline over the ClinicalTrials.gov registry answering where immuno-oncology development is concentrating: 10,971 trials tagged into six therapy classes by a controlled-vocabulary classifier validated against three human labelers, with publication-style figures, an interactive dashboard, and an inferential-statistics layer.",
+      "learned": "How to take a research question end-to-end — classifier validation against human labels and a leakage-clean re-audit taught me what it takes for an analysis to hold up to scrutiny.",
+      "live": {
+        "label": "Explore the dashboard",
+        "url": "/demos/trials"
+      },
+      "case": {
+        "summary": "A self-directed pipeline over the ClinicalTrials.gov registry — 26,714 records distilled to 10,971 immuno-oncology trials — answering where cancer-immunotherapy development is concentrating, with the classifier behind the answer validated three independent ways.",
+        "context": "Every other project in this portfolio runs on the course dataset. This one I chose and framed myself: which therapy classes, phases, and sponsors are crowding the immuno-oncology pipeline, and how has that shifted over the decade? The obstacle is that trial registrations don't say which therapy class they belong to — the signal hides in messy titles, intervention names, and company code names like \"MK-3475\" that reveal nothing unless resolved. Any answer is only as good as the classifier that produces it, so most of the engineering went into proving the classifier could be trusted.",
+        "approach": [
+          "Pull interventional cancer-immunotherapy trials from the NIH/NLM registry — 26,714 raw records — and restrict to a clean 2010–2025 analysis window with a written funnel accounting for every drop.",
+          "Tag each trial into six canonical therapy classes with a controlled-vocabulary classifier, backed by an NCI-Thesaurus resolution layer that translates company code names into their generic identities.",
+          "Validate three independent ways: a 580-trial sample graded by three human labelers, a leakage-clean audit of the trials the pipeline dropped, and a full-corpus re-tag by an independent LLM labeler.",
+          "Build the analysis on top — Poisson growth trends with confidence intervals, Holm-corrected country comparisons, FDA-approval timelines — and publish it as figures plus the interactive dashboard linked above."
+        ],
+        "challenges": [
+          {
+            "problem": "Company code names hid whole therapy classes. A trial testing \"MK-3475\" is a checkpoint-inhibitor trial, but no vocabulary of generic drug names can see that — early counts silently undercounted exactly the classes with the most industry activity.",
+            "solution": "Added an NCI-Thesaurus resolution layer that maps code names to canonical agents before classification. After it, the vocabulary's counts converged with the independent LLM re-tag — checkpoint 7,000 vs 6,993 — instead of trailing it."
+          },
+          {
+            "problem": "No ground truth existed to score the classifier against — the registry has no therapy-class field, so accuracy claims would have been circular.",
+            "solution": "Built the ground truth: three independent labelers graded a 580-trial sample (inter-rater Fleiss' κ = 0.97), and the classifier was scored against their consensus with per-class precision and recall reported with confidence intervals — 0.969 / 0.981 on the largest class."
+          },
+          {
+            "problem": "The dropped trials could hide the story. If the 8,318 records excluded from the window contained six-class trials the vocabulary missed, every downstream number would be biased, and no in-sample metric would ever show it.",
+            "solution": "Audited a 360-trial sample of the drops under the same blinding as the main validation: 10.8% were genuine misses (CI 8.0–14.5%), reported by class in the writeup rather than left as an unknown."
+          },
+          {
+            "problem": "One method, one blind spot: any single classifier — rules or LLM — fails in systematic ways its own metrics can't reveal.",
+            "solution": "Ran a second, fully independent method: an LLM re-tagged all 19,230 classified trials from the same class definitions. The two methods agree at mean Cohen's κ = 0.79 with 85% exact class-set agreement, and their disagreements flagged the weakest class definitions."
+          }
+        ],
+        "results": [
+          {
+            "value": "10,971",
+            "label": "trials analyzed",
+            "note": "2010–2025 window, six therapy classes, funnel-accounted from 26,714 raw records"
+          },
+          {
+            "value": "κ 0.97",
+            "label": "labeler agreement",
+            "note": "three independent graders on 580 trials; classifier precision 0.969 / recall 0.981 vs their consensus"
+          },
+          {
+            "value": "+32%/yr",
+            "label": "fastest-growing class",
+            "note": "bispecifics, Poisson trend 2015–2024 — significantly faster than CAR-T's +13%/yr (z = 8.7)"
+          },
+          {
+            "value": "10.8%",
+            "label": "audited miss rate",
+            "note": "measured on a 360-trial sample of the pipeline's own drops, CI 8.0–14.5% — reported, not hidden"
+          }
+        ],
+        "reflection": "The dashboard is what people see, but the classifier validation is the work I'd defend in a review. Measuring my own pipeline's miss rate — and publishing it with a confidence interval — changed how I read other people's results: a headline number without an error bar on the labeling step is a number I now know how to question. The approval-timeline finding taught the other lesson: the honest claim was a temporal association, not causation, and saying so plainly cost nothing.",
+        "code": {
+          "title": "Measuring what the classifier missed",
+          "intro": "In-sample metrics cannot see the trials a pipeline discarded. If the 8,318 dropped records held six-class trials the vocabulary failed to recognise, every downstream number would be biased and no accuracy score would reveal it. So the drops were sampled and graded under the same blinding as the main validation, and the miss rate published with a confidence interval.",
+          "lang": "python",
+          "body": "AUDIT_N = 360          # sample of the trials the pipeline dropped\nCONF = 0.95\n\ndef audit_dropped(dropped, labels):\n    \"\"\"Estimate end-to-end recall from a blinded sample of the drops.\n\n    Returns the share of dropped trials that were genuine six-class\n    misses, with a Wilson interval — an interval, not a point estimate,\n    because a sampled rate reported bare invites false precision.\n    \"\"\"\n    sample = dropped.sample(AUDIT_N, random_state=SEED)\n    verdicts = [labels[t] for t in sample[\"nct_id\"]]\n    missed = sum(v != \"not_io\" for v in verdicts)\n    lo, hi = proportion_confint(missed, AUDIT_N, alpha=1 - CONF,\n                                method=\"wilson\")\n    return {\"missed_share\": missed / AUDIT_N,\n            \"missed_share_ci\": [lo, hi],\n            \"audit_sample\": AUDIT_N}",
+          "note": "Result: 10.8% missed, CI 8.0–14.5% — reported in the writeup by therapy class rather than left as an unknown."
+        }
+      },
+      "images": [
+        "module_10/class-mix-shift.webp",
+        "module_10/growth-rates.webp"
+      ],
+      "area_key": "ml",
+      "area": "ML & Modeling",
+      "image_dims": [
+        [
+          1400,
+          670
+        ],
+        [
+          1400,
+          525
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Class Mix Shift",
+        "Growth Rates"
+      ],
+      "source": {
+        "label": "Read the join code",
+        "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_10-second-source"
+      }
+    },
+    {
+      "id": 11,
+      "code": "M11",
+      "title": "MLOps — Experiment Tracking",
+      "date": "Aug 2026",
+      "tags": [
+        "MLflow",
+        "Weights & Biases",
+        "scikit-learn"
+      ],
+      "overview": "Wraps the Module 9 clustering pipeline with experiment tracking so every training run's parameters, inertia metric, and fitted model are recorded and comparable — MLflow as the required tracker, Weights & Biases as the optional second one.",
+      "learned": "Why serious ML work is impossible without tracking: once runs became comparable artifacts instead of terminal scrollback, iteration got dramatically faster.",
+      "images": [
+        "module_11/cluster_run.webp",
+        "module_11/wandb_run.webp",
+        "module_11/model_details.webp"
+      ],
+      "area_key": "ml",
+      "area": "ML & Modeling",
+      "image_dims": [
+        [
+          1100,
+          275
+        ],
+        [
+          1100,
+          381
+        ],
+        [
+          1100,
+          379
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Cluster Run",
+        "W&B Run",
+        "Model Card"
+      ]
+    },
+    {
+      "id": 12,
+      "code": "M12",
+      "title": "Neural Network from Scratch",
+      "date": "Aug 2026",
+      "tags": [
+        "NumPy",
+        "scikit-learn",
+        "Matplotlib"
+      ],
+      "overview": "A two-layer neural network implemented in NumPy only — no framework — that predicts graduate-admission outcomes from GPA, GRE, and program features, with leak-free preprocessing (training-set medians and standardization) and early stopping with best-epoch restore.",
+      "learned": "What backpropagation actually does — writing the gradients by hand demystified every framework I will ever use on top of them.",
+      "images": [
+        "module_12/mse_curve.webp",
+        "module_12/accuracy_curve.webp"
+      ],
+      "area_key": "ml",
+      "area": "ML & Modeling",
+      "image_dims": [
+        [
+          1100,
+          550
+        ],
+        [
+          1100,
+          550
+        ]
+      ],
+      "repo_note": "Private repo",
+      "image_labels": [
+        "MSE Curve",
+        "Accuracy Curve"
+      ]
+    },
+    {
+      "id": 13,
+      "code": "M13",
+      "title": "LM Fine-Tuning & Deployment — \"Will You Get In?\"",
+      "date": "Aug 2026",
+      "tags": [
+        "PyTorch",
+        "DistilBERT",
+        "Transformers",
+        "Gradio",
+        "Flask"
+      ],
+      "overview": "Fine-tunes DistilBERT for binary admissions prediction on the Grad Café dataset and deploys it as the interactive \"Will You Get In?\" page of a Flask app — a single shared applicant-to-text template guarantees training and serving stay consistent.",
+      "learned": "The training/serving-skew problem first-hand — and how one shared serialization module, imported by both sides, eliminates a whole class of silent bugs.",
+      "images": [
+        "module_13/prediction.webp",
+        "module_13/training_output.webp"
+      ],
+      "area_key": "ml",
+      "area": "ML & Modeling",
+      "live": {
+        "label": "Try it live",
+        "url": "https://huggingface.co/spaces/kxcaroline/will-you-get-in"
+      },
+      "image_dims": [
+        [
+          1100,
+          579
+        ],
+        [
+          1100,
+          932
+        ]
+      ],
+      "embed": {
+        "url": "https://kxcaroline-will-you-get-in.hf.space",
+        "label": "Run the model right here",
+        "note": "Fine-tuned DistilBERT · runs on Hugging Face",
+        "caveat": "Degree type moves this prediction more than grades do: a 3.9-GPA doctoral applicant scores below a 3.4-GPA master's applicant with no GRE, because doctoral admit rates in this data are far lower. The model is reading the base rate, not judging the record."
+      },
+      "case": {
+        "summary": "Fine-tuning a language model to predict graduate admissions — and the checks that stopped a respectable-looking accuracy from hiding a broken model.",
+        "context": "Modules 2 through 12 turned roughly 100,000 self-reported Grad Café results into a clean, analyzed dataset. The open question was whether a pretrained language model could read an applicant's details as text and predict the outcome better than the obvious shortcuts — and whether I could deploy it somewhere a person could actually use it.",
+        "approach": [
+          "Serialize each applicant into a single text “card” — program, university, degree, term, citizenship, GPA, three GRE scores, free-text comments — using one template that the model reads the same way every time.",
+          "Fine-tune DistilBERT for binary classification (Accepted / Rejected) at sequence length 256 for three epochs, checkpointing on best validation F1 rather than the last epoch.",
+          "Rebuild the modeling dataset from the raw scrape with a written ledger, recovering degree types that earlier cleaning had discarded (77,443 → 79,798 rows).",
+          "Serve the saved model behind a Flask page so anyone can enter their own numbers and get a prediction."
+        ],
+        "challenges": [
+          {
+            "problem": "Training and serving could silently disagree. If the web form ever formatted an applicant even slightly differently than training did, the model would score inputs it had never really seen — and nothing would error.",
+            "solution": "One module, serialize.py, owns the applicant-to-text template and is imported by both the training pipeline and the web app. There is no second copy to drift, so a change to the format changes both sides at once."
+          },
+          {
+            "problem": "A headline accuracy can hide a collapse. A model that learned nothing but “PhD applicants get rejected” could still post a respectable-looking number.",
+            "solution": "Evaluation breaks the held-out test set down by degree and reports acceptance rate, accuracy and recall for every group of at least 20 — so a collapse in either direction is visible instead of averaged away."
+          },
+          {
+            "problem": "Duplicate applicant cards could inflate the score by letting the model recognize rows it had already memorized.",
+            "solution": "Scored the test set split into cards seen during training and cards never seen. Unseen accuracy came in at 0.770 against 0.796 overall — close enough to show the model generalizes rather than recalls."
+          },
+          {
+            "problem": "Comparing against the previous module's neural network was not apples to apples: it kept only two degree types and a different row count.",
+            "solution": "Reported both numbers with the majority-class baseline beside them and stated plainly why they are not directly comparable, rather than claiming a clean win."
+          }
+        ],
+        "results": [
+          {
+            "label": "Test accuracy",
+            "value": "0.796",
+            "note": "against a 0.538 majority-class baseline — the number that matters"
+          },
+          {
+            "label": "F1 (Accepted)",
+            "value": "0.766",
+            "note": "precision 0.814, recall 0.724 on 15,960 held-out rows"
+          },
+          {
+            "label": "Unseen-card accuracy",
+            "value": "0.770",
+            "note": "close to overall, so the model generalizes rather than memorizes"
+          },
+          {
+            "label": "Previous model",
+            "value": "0.682",
+            "note": "the from-scratch two-layer network from Module 12, on its own data"
+          }
+        ],
+        "reflection": "The modeling was the short part. Most of the work was building the checks that could prove the result was real — the per-degree breakdown, the seen/unseen split, the duplicate ceiling. I would rather report 0.796 that I can defend than a higher number I cannot explain.",
+        "code": {
+          "title": "serialize.py — the module both sides import",
+          "intro": "Training and serving disagreeing about input format is a silent failure: the model scores cards it never saw in training and nothing raises. This file is the fix. One template, one formatter, imported by the training pipeline and by the web app, so a change to the format changes both sides at once and drift is not expressible.",
+          "lang": "python",
+          "body": "# Structured fields precede free text so that if the tokenizer's max\n# length is ever exceeded, truncation trims comment tails, not facts.\nTEMPLATE = (\n    \"Program: {program}\\n\"\n    \"University: {university}\\n\"\n    \"Degree: {degree}\\n\"\n    \"Term: {term}\\n\"\n    \"Citizenship: {us_or_international}\\n\"\n    \"GPA: {gpa}\\n\"\n    \"GRE Quant: {gre}\\n\"\n    \"GRE Verbal: {gre_v}\\n\"\n    \"GRE AW: {gre_aw}\\n\"\n    \"Comments: {comments}\"\n)\n\n# Every spelling of \"missing\" found in the scrape or in a blank form.\n_MISSING = {\"\", \"none\", \"nan\", \"<na>\", \"nat\", \"unknown\", \"null\"}\n\ndef to_card(record: dict) -> str:\n    \"\"\"Render one applicant as the text the model reads.\n\n    Imported by train_model.py and by inference.py. The outcome label\n    never appears: the model sees only what an applicant could\n    truthfully supply before knowing their result.\n    \"\"\"\n    fields = {f: _fmt(record.get(f), numeric=f in NUMERIC_FIELDS)\n              for f in ALL_FIELDS}\n    return TEMPLATE.format(**fields)",
+          "note": "The repository is private — publishing full solutions to a course still being taught would not be fair to the students taking it. This excerpt is the load-bearing part."
+        }
+      },
+      "repo_note": "Private repo",
+      "image_labels": [
+        "Prediction",
+        "Training Log"
+      ],
+      "source": {
+        "label": "Read the serving code",
+        "url": "https://huggingface.co/spaces/kxcaroline/will-you-get-in/tree/main"
+      }
+    }
+  ]
+}

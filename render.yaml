@@ -1,0 +1,17 @@
+# Render Blueprint. In the Render dashboard: New + -> Blueprint -> pick
+# this repository. The site is at the repository root, so no rootDir.
+services:
+  - type: web
+    name: caroline-kim-portfolio
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      # Optional. Set to enable the cookie-free analytics beacon; the site
+      # renders normally when it is absent.
+      - key: ANALYTICS_TOKEN
+        sync: false

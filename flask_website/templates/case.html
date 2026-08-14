@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}{{ m.title }}{% endblock title %}
+{% block description %}{{ m.case.summary }}{% endblock description %}
+{% block og_title %}{{ m.title }} — Caroline Kim{% endblock og_title %}
+
+{% block content %}
+<article class="case area-{{ m.area_key }}">
+
+    <a class="case-back" href="{{ url_for('pages.projects') }}#module-{{ m.id }}">
+        &larr; All projects
+    </a>
+
+    <header class="case-head">
+        <div class="case-eyebrow">
+            <span class="case-code">{{ m.code }}</span>
+            <span class="case-area">{{ m.area }}</span>
+            <span class="case-date">{{ m.date }}</span>
+        </div>
+        <h1>{{ m.title }}</h1>
+        <p class="case-summary">{{ m.case.summary }}</p>
+
+        <div class="case-actions">
+            {% if m.live %}
+            <a class="btn" href="{{ m.live.url }}" target="_blank" rel="noopener">{{ m.live.label }} &#8599;</a>
+            {% endif %}
+            {# Public source when there is any, and otherwise a way to ask:
+               a mailto is more use than a notice that there is nothing to
+               click. Kept in step with the projects page, which makes the
+               same choice from the same key. #}
+            {% if m.source %}
+            <a class="btn btn-ghost" href="{{ m.source.url }}"
+               target="_blank" rel="noopener">{{ m.source.label }} &#8599;</a>
+            {% else %}
+            <a class="btn btn-ghost"
+               href="mailto:carolinekim@hey.com?subject=Source%20for%20{{ m.code }}%20{{ m.title | urlencode }}">Request the source</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if m.case.results %}
+    <section class="case-results">
+        {% for r in m.case.results %}
+        <div class="case-result">
+            <div class="case-result-value">{{ r.value }}</div>
+            <div class="case-result-label">{{ r.label }}</div>
+            <div class="case-result-note">{{ r.note }}</div>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="case-section">
+        <h2>The problem</h2>
+        <p>{{ m.case.context }}</p>
+    </section>
+
+    {% if m.case.approach %}
+    <section class="case-section">
+        <h2>Approach</h2>
+        <ol class="case-steps">
+            {% for step in m.case.approach %}
+            <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+    </section>
+    {% endif %}
+
+    {% if m.case.challenges %}
+    <section class="case-section">
+        <h2>Challenges</h2>
+        {% for c in m.case.challenges %}
+        <div class="case-challenge">
+            <p class="case-problem">{{ c.problem }}</p>
+            <p class="case-solution"><span class="case-solution-label">How I solved it</span>{{ c.solution }}</p>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if m.case.code %}
+    <section class="case-section">
+        <h2>{{ m.case.code.title }}</h2>
+        <p>{{ m.case.code.intro }}</p>
+        <pre class="code"><code>{{ m.case.code.body }}</code></pre>
+        {% if m.case.code.note %}
+        <p class="code-note">{{ m.case.code.note }}</p>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% if m.images %}
+    <section class="case-section">
+        <h2>What it looks like</h2>
+        {# Tiles, as on the projects page, but larger and wrapping onto as
+           many rows as it takes: this page has no strip to keep to one
+           line, and a full-page capture served at its own size rendered as
+           an unreadable sliver in a mostly empty frame. Each tile carries
+           its label and opens the full image on click. #}
+        <div class="case-shots">
+            {% for img in m.images %}
+            {% set tsize = img | thumb_size %}
+            {% set label = m.image_labels[loop.index0] if m.image_labels else "" %}
+            <figure class="shot">
+                <img class="{{ m.image_dims[loop.index0] | thumb_class if m.image_dims else '' }}"
+                     src="{{ url_for('static', filename='images/thumbs/' ~ img) }}"
+                     data-full="{{ url_for('static', filename='images/projects/' ~ img) }}"
+                     alt="{{ m.title }} — {{ label or 'screenshot ' ~ loop.index }}"
+                     {% if tsize %}width="{{ tsize[0] }}" height="{{ tsize[1] }}"{% endif %}
+                     loading="lazy" decoding="async">
+                {% if label %}<figcaption class="shot-cap">{{ label }}</figcaption>{% endif %}
+            </figure>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if m.case.reflection %}
+    <section class="case-section">
+        <h2>What I took from it</h2>
+        <p class="case-reflection">{{ m.case.reflection }}</p>
+    </section>
+    {% endif %}
+
+    {% if prev_m or next_m %}
+    <nav class="case-nav">
+        {% if prev_m %}
+        <a class="case-nav-link" href="{{ url_for('pages.case', module_id=prev_m.id) }}">
+            <span class="case-nav-dir">&larr; Previous</span>
+            <span class="case-nav-title">{{ prev_m.title }}</span>
+        </a>
+        {% endif %}
+        {% if next_m %}
+        <a class="case-nav-link case-nav-next" href="{{ url_for('pages.case', module_id=next_m.id) }}">
+            <span class="case-nav-dir">Next &rarr;</span>
+            <span class="case-nav-title">{{ next_m.title }}</span>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+</article>
+{% endblock content %}
+
+{% block scripts %}
+{# Same script as the projects page: the accordion half exits early when
+   there are no module blocks, leaving only the screenshot lightbox. #}
+<script src="{{ asset('js/scrollspy.js') }}"></script>
+{% endblock scripts %}

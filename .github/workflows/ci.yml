@@ -1,0 +1,121 @@
+name: CI
+
+# Quality pipeline, run on every push and pull request. The same gates run
+# locally (see README): pylint at 10/10, mypy and pyright clean, pytest at
+# 100% statement coverage, plus report-only dependency scans.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:   # allow manual "Run workflow" from the Actions tab
+
+# Least-privilege default token for every job.
+permissions:
+  contents: read
+
+jobs:
+  # 1) Static analysis — fail if the Pylint score drops below 10/10.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Pylint (fail under 10)
+        run: pylint flask_website run.py build_thumbs.py build_stats.py build_assets.py tests/test_site.py --fail-under=10
+
+  # 2) Static type checking — mypy and pyright, both must pass clean.
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: mypy
+        run: mypy flask_website run.py build_thumbs.py build_stats.py build_assets.py tests
+      - name: pyright
+        run: npx --yes pyright@1.1.412
+
+  # 3) Tests — full pytest suite with 100% statement coverage enforced,
+  #    on the runtime we deploy (3.12, per render.yaml) and its neighbours.
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Pytest with coverage (fails under 100%)
+        run: pytest --cov=flask_website --cov-report=term-missing --cov-fail-under=100
+
+  # 4) Boot check — the app starts and serves every page under the
+  #    production entry point (gunicorn, as Render runs it), not just the
+  #    test client. Catches factory/config mistakes unit tests import around.
+  boot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Serve with gunicorn and probe every route
+        run: |
+          gunicorn run:app --bind 127.0.0.1:8080 --daemon
+          sleep 3
+          for route in / /projects /contact /demos/trials /projects/10 /projects/13; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080$route")
+            echo "$route -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          # The 404 page is a page too.
+          code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/nope)
+          [ "$code" = "404" ] || exit 1
+
+  # 5) Dependency CVEs — report-only scans, mirroring the policy in my
+  #    coursework pipeline: produce output, never red the build.
+  #
+  #    pip-audit needs no account or token; Snyk runs only when the
+  #    SNYK_TOKEN secret exists (secrets are per-repo, so a fork or a fresh
+  #    clone of this repo works without one).
+  audit:
+    runs-on: ubuntu-latest
+    # Hoisted to job env so the step's `if` can test it: the secrets
+    # context cannot be read directly inside a step conditional.
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: pip-audit (report-only)
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt -r requirements-dev.txt || true
+      - name: Snyk dependency test (report-only, needs SNYK_TOKEN)
+        if: env.SNYK_TOKEN != ''
+        continue-on-error: true
+        run: |
+          npm install -g snyk
+          snyk test --file=requirements.txt || true

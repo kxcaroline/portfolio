@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <div class="hero-kicker">HELLO, I&rsquo;M</div>
+        <h1>Caroline Kim</h1>
+        <p class="hero-lede">
+            I build data and machine-learning systems end to end &mdash; scraping and
+            cleaning real-world data, modeling it, and shipping the result as
+            tested, containerized, cloud-deployed services.
+        </p>
+        <p class="hero-body">
+            Over one summer at Johns Hopkins (EP 605.256, Modern Software Concepts
+            in Python) I took a single messy dataset &mdash; 100,000 graduate-admissions
+            records &mdash; from raw scrape to a fine-tuned DistilBERT model deployed
+            behind a Flask app, hardening every layer along the way: tests at 100%
+            coverage, injection-safe SQL, Docker microservices, AWS deployment, and
+            tracked ML experiments.
+        </p>
+        <div class="hero-cta">
+            <a class="btn" href="{{ url_for('pages.projects') }}">See the work &rarr;</a>
+            <a class="btn btn-ghost" href="{{ url_for('pages.contact') }}">Get in touch</a>
+        </div>
+    </div>
+</section>
+
+{% if skills and skills.groups %}
+<section class="home-section">
+    <div class="home-heading">CORE SKILLS</div>
+    <p class="stack-intro">The tools I reach for most, and what I&rsquo;ve
+       built with them.</p>
+
+    <div class="skills-grid">
+        {% for group in skills.groups %}
+        <div class="skills-col area-{{ group.key }}">
+            <div class="skills-col-head">{{ group.label }}</div>
+            {% for item in group['items'] %}
+            <a class="skill" href="{{ url_for('pages.projects') }}#module-{{ item.module }}">
+                <span class="skill-name">{{ item.name }}</span>
+                <span class="skill-proof">{{ item.proof }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if skills.data_sources %}
+    <div class="skills-rest">
+        <span class="skills-rest-label">Data sources</span>
+        {% for item in skills.data_sources %}<a class="skills-rest-item"
+            href="{{ url_for('pages.projects') }}?tool={{ item.name | urlencode }}">{{ item.name }}</a>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% if skills.rest %}
+    <div class="skills-rest">
+        <span class="skills-rest-label">Also worked with</span>
+        {% for item in skills.rest %}<a class="skills-rest-item"
+            href="{{ url_for('pages.projects') }}?tool={{ item.name | urlencode }}">{{ item.name }}</a>{% endfor %}
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<section class="home-section">
+    <div class="home-heading">FOCUS</div>
+    <div class="focus-grid">
+        <div class="focus-item area-data">
+            <div class="focus-title">Data Engineering</div>
+            <p>Scraping, cleaning with audit ledgers, PostgreSQL, idempotent pipelines.</p>
+        </div>
+        <div class="focus-item area-ml">
+            <div class="focus-title">ML &amp; Modeling</div>
+            <p>Clustering, neural networks from scratch, LM fine-tuning, experiment tracking.</p>
+        </div>
+        <div class="focus-item area-prod">
+            <div class="focus-title">Production Craft</div>
+            <p>Testing &amp; CI, secure SQL, Docker microservices, AWS (S3, SageMaker, EC2).</p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

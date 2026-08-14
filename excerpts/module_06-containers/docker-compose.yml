@@ -1,0 +1,199 @@
+# docker-compose.yml — orchestrates the four-service microservice stack:
+#   db (PostgreSQL) · rabbitmq (broker) · web (Flask) · worker (consumer)
+# plus a one-shot `db-init` that seeds PostgreSQL from the mounted dataset.
+#
+# Services share the Compose-default private network and reach each other by
+# SERVICE NAME (db, rabbitmq) — never localhost. Only web (8080) and the
+# RabbitMQ management UI (15672) are published to the host; Postgres (5432) and
+# AMQP (5672) stay internal to the private network.
+
+# Connection URLs use the SERVICE NAMES below as hostnames (db, rabbitmq), never
+# localhost. No service connects as the Postgres bootstrap superuser (`postgres`);
+# each uses a least-privilege role, and even schema creation runs as a
+# non-superuser owner:
+#   db-init -> gradcafe_owner (non-superuser): creates schema + seeds
+#   worker  -> gradcafe_rw: SELECT/INSERT/UPDATE (the only writer)
+#   web     -> gradcafe_ro: SELECT only (it just publishes tasks + reads)
+
+services:
+  # --- PostgreSQL: the database ------------------------------------------------
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      # The conventional `postgres` bootstrap SUPERUSER — used ONLY for one-time
+      # cluster init (running 01-roles.sql to create the least-privilege roles).
+      # No service ever connects as it: db-init/web/worker use gradcafe_owner/ro/rw.
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: gradcafe
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # named volume -> data survives restarts
+      # Create the least-privilege roles at first init (runs once, as the owner).
+      - ./least_privilege.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:                           # "ready", not just "started"
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gradcafe"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # No host port published: the DB is reachable only on the private network.
+
+  # --- RabbitMQ: the message broker -------------------------------------------
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      # Override RABBITMQ_UI_PORT to avoid a host-port collision on the host.
+      - "${RABBITMQ_UI_PORT:-15672}:15672"   # management UI (dev only; guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # AMQP port 5672 is NOT published — internal to the private network only.
+
+  # --- One-shot seeder: load the dataset into PostgreSQL, then exit ------------
+  db-init:
+    # Reuses the worker image, which is built ONCE by the `worker` service below.
+    # No `build:` here on purpose: three services all building + exporting the same
+    # `module_6-worker` tag concurrently races and can fail `up --build`.
+    image: module_6-worker
+    environment:
+      # Connect as the dedicated NON-superuser owner role (not the Postgres
+      # bootstrap superuser): it owns and creates the schema and seeds it — nothing more.
+      DATABASE_URL: postgresql://gradcafe_owner:${OWNER_PASSWORD:?set in .env}@db:5432/gradcafe
+      SEED_HOLDBACK: "2000"              # hold back the newest 2000 rows for the demo scrape
+      # No RABBITMQ_URL: the seeder only writes to Postgres; it never touches the broker.
+    volumes:
+      - ./src/data:/app/data:ro          # dataset mounted read-only
+    command: ["python", "-m", "db.load_data"]
+    depends_on:
+      db:
+        condition: service_healthy       # wait until Postgres can accept connections
+
+  # --- Web: the Flask dashboard + publisher -----------------------------------
+  web:
+    build:
+      context: ./src
+      dockerfile: web/Dockerfile
+    image: module_6-web
+    restart: unless-stopped
+    read_only: true                # immutable root filesystem (defense in depth)
+    tmpfs: ["/tmp"]                 # the only writable path the app needs (in memory)
+    cap_drop: ["ALL"]              # drop all Linux capabilities (none are needed)
+    security_opt: ["no-new-privileges:true"]   # block privilege escalation
+    deploy:
+      resources:
+        limits:                  # cap blast radius: a leak OOM-restarts this one container
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    environment:
+      # Read-only DB role: the web tier never writes (it publishes + reads).
+      DATABASE_URL: postgresql://gradcafe_ro:${RO_PASSWORD:?set in .env}@db:5432/gradcafe
+      RABBITMQ_URL: amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@rabbitmq:5672/
+    ports:
+      # Override WEB_PORT to avoid a host-port collision on the host.
+      - "${WEB_PORT:-8080}:8080"          # host:container — visit http://localhost:8080
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully   # don't serve until data is loaded
+
+  # --- Worker: the RabbitMQ consumer + ETL ------------------------------------
+  worker:
+    build:
+      context: ./src
+      dockerfile: worker/Dockerfile
+    image: module_6-worker
+    restart: unless-stopped
+    stop_grace_period: 30s                 # let the worker finish its in-flight task on SIGTERM
+    read_only: true                # immutable root filesystem (defense in depth)
+    tmpfs: ["/tmp"]                 # the only writable path the app needs (in memory)
+    cap_drop: ["ALL"]              # drop all Linux capabilities (none are needed)
+    security_opt: ["no-new-privileges:true"]   # block privilege escalation
+    deploy:
+      resources:
+        limits:                  # a bit more headroom than web for the ETL/LLM path
+          cpus: "2.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+    environment:
+      # Read-write DB role: the worker is the only service that writes.
+      DATABASE_URL: postgresql://gradcafe_rw:${RW_PASSWORD:?set in .env}@db:5432/gradcafe
+      RABBITMQ_URL: amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@rabbitmq:5672/
+      SCRAPE_SOURCE: sample               # 'sample' = container-safe; 'live' = real Selenium scraper
+      SCRAPE_SAMPLE_BATCH: "500"          # rows added per Pull Data click
+      LLM_URL: http://llm:8000            # used only in live mode; idle in sample mode
+      METRICS_PORT: "9100"                # expose Prometheus metrics (internal scrape)
+    volumes:
+      - ./src/data:/app/data:ro          # read-only data mount (per the assignment)
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+  # --- Outbox relay: publishes transactional-outbox rows to RabbitMQ ----------
+  # The worker writes follow-up messages (e.g. recompute-after-scrape) into the
+  # outbox table atomically with the data; this relay moves them to the broker.
+  outbox-relay:
+    # Reuses the worker image (built once by `worker`); no `build:` here so it
+    # doesn't race the worker to export the same `module_6-worker` tag.
+    image: module_6-worker
+    restart: unless-stopped
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      DATABASE_URL: postgresql://gradcafe_rw:${RW_PASSWORD:?set in .env}@db:5432/gradcafe
+      RABBITMQ_URL: amqp://${RABBIT_USER}:${RABBIT_PASSWORD}@rabbitmq:5672/
+    command: ["python", "-m", "worker.outbox_relay"]
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+  # --- LLM standardizer: inference microservice (live mode only) --------------
+  # Inference has a very different resource/scaling profile from web/worker, so it
+  # lives in its own container. Gated behind the "live" profile, so the default
+  # sample-mode demo never builds or starts this heavy image. In live mode the
+  # worker POSTs scraped rows to POST /standardize here. No DB, no secrets, no
+  # published port — pure compute, reachable only on the private network.
+  llm:
+    build:
+      context: ./llm_hosting
+    image: module_6-llm
+    profiles: ["live"]
+    restart: unless-stopped
+    environment:
+      MODEL_REPO: TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF
+      MODEL_FILE: tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2G                       # model weights need headroom
+
+volumes:
+  pgdata:                                # named volume for PostgreSQL durability

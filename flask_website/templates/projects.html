@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Projects{% endblock title %}
+
+
+
+{% block content %}
+<header class="page-head">
+    <h1>What I&rsquo;ve built</h1>
+    <p class="page-sub">Thirteen projects from Modern Software Concepts in Python
+       (JHU EP 605.256, Summer 2026) &mdash; from web scraping to a fine-tuned,
+       deployed language model. Every block below is rendered from
+       <span class="mono">projects.json</span> by the Flask app itself.</p>
+</header>
+
+{% if stats and points %}
+{% include "_dataset.html" %}
+{% endif %}
+
+<div class="modules">
+    {# Grouped by kind, with headings only once there is more than one
+       group: while every entry is coursework the list reads exactly as an
+       ungrouped one, and the first original project splits it in two
+       without any change here. #}
+    {% for g in groups %}
+    {% if groups | length > 1 %}
+    <h2 class="section-head" id="section-{{ g.key }}">{{ g.label }}</h2>
+    {% if g.blurb %}<p class="section-sub">{{ g.blurb }}</p>{% endif %}
+    {% endif %}
+    {% for m in g["items"] %}
+    <article class="module area-{{ m.area_key }}" id="module-{{ m.id }}">
+        <span class="module-ghost" aria-hidden="true">{{ m.num }}</span>
+        <div class="module-head">
+            <span class="module-code">{{ m.code }}</span>
+            <h2 class="module-title">{{ m.title }}</h2>
+            <span class="module-area">{{ m.area }}</span>
+            <span class="module-date">{{ m.date }}</span>
+        </div>
+
+        <div class="module-fold"><div class="module-fold-inner">
+        <div class="module-body">
+            <p class="module-overview">{{ m.overview }}</p>
+            <p class="module-learned"><span class="learned-label">Learned</span> {{ m.learned }}</p>
+
+            <div class="module-meta">
+                <div class="module-tags">
+                    {% for t in m.tags %}<button type="button" class="tag"
+                        aria-label="Show projects using {{ t }}">{{ t }}</button>{% endfor %}
+                </div>
+                <div class="module-links">
+                    {% if m.case %}
+                    <a class="module-link module-case"
+                       href="{{ url_for('pages.case', module_id=m.id) }}">Read the case study &rarr;</a>
+                    {% endif %}
+                    {% if m.live %}
+                    <a class="module-link module-live" href="{{ m.live.url }}"
+                       target="_blank" rel="noopener">{{ m.live.label }} &#8599;</a>
+                    {% endif %}
+                    {# A project links its source when there is public source
+                       to link. Coursework repositories stay private so that
+                       current students are not handed solutions, and those
+                       are labelled rather than given a link that 404s. #}
+                    {% if m.source %}
+                    <a class="module-link module-live" href="{{ m.source.url }}"
+                       target="_blank" rel="noopener">{{ m.source.label }} &#8599;</a>
+                    {% else %}
+                    <span class="module-link module-private"
+                          title="Source available on request">Private repo</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if m.embed %}
+        {# Click-to-load: the third-party iframe is only fetched when the
+           visitor asks for it, so it never slows the page down. #}
+        <div class="embed" data-embed-url="{{ m.embed.url }}">
+            <button type="button" class="embed-cta">
+                <span class="embed-play" aria-hidden="true">&#9654;</span>
+                <span>
+                    <span class="embed-label">{{ m.embed.label }}</span>
+                    <span class="embed-note">{{ m.embed.note }}</span>
+                </span>
+            </button>
+        </div>
+        {% if m.embed.caveat %}
+        {# Outside the frame's box, not inside it: opening the demo replaces
+           that box's contents with the iframe, and this note matters most
+           after the visitor has run an example, not before. #}
+        <p class="embed-caveat">{{ m.embed.caveat }}</p>
+        {% endif %}
+        {% endif %}
+
+        {% if m.images %}
+        <div class="module-strip" tabindex="0">
+            {# Three at most: a fourth wraps to its own row at this measure,
+               and a ragged second row of one reads worse than a shorter
+               contact sheet. The rest stay in the data and in the case
+               study. #}
+            {% for img in m.images[:3] %}
+            {# The strip serves a thumbnail sized for the tile; the full image
+               is fetched only if the visitor opens the lightbox. Explicit
+               width/height let the browser reserve space before either
+               loads, which prevents cumulative layout shift. #}
+            {% set tsize = img | thumb_size %}
+            {% set label = m.image_labels[loop.index0] if m.image_labels else "" %}
+            <figure class="shot">
+                <img class="{{ m.image_dims[loop.index0] | thumb_class }}"
+                     src="{{ url_for('static', filename='images/thumbs/' ~ img) }}"
+                     data-full="{{ url_for('static', filename='images/projects/' ~ img) }}"
+                     alt="{{ m.title }} — {{ label or 'screenshot ' ~ loop.index }}"
+                     {% if tsize %}width="{{ tsize[0] }}" height="{{ tsize[1] }}"{% endif %}
+                     loading="lazy" decoding="async">
+                {% if label %}<figcaption class="shot-cap">{{ label }}</figcaption>{% endif %}
+            </figure>
+            {% endfor %}
+        </div>
+        {% endif %}
+        </div></div>{# /module-fold-inner /module-fold #}
+    </article>
+    {% endfor %}
+    {% endfor %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ asset('js/scrollspy.js') }}"></script>
+{% endblock scripts %}

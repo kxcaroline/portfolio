@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found{% endblock title %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Page not found</h1>
+    <p class="page-sub">That page doesn&rsquo;t exist &mdash; it may have moved,
+       or the link may be mistyped.</p>
+</section>
+
+<div class="hero-cta">
+    <a class="btn" href="{{ url_for('pages.projects') }}">See the work &rarr;</a>
+    <a class="btn btn-ghost" href="{{ url_for('pages.home') }}">Back home</a>
+</div>
+{% endblock content %}

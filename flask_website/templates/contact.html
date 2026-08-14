@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Contact{% endblock title %}
+
+{% block content %}
+<section class="page-head">
+    <h1>Contact</h1>
+    <p class="page-sub">Email is fastest. I&rsquo;m open to roles in applied
+       AI and ML engineering.</p>
+</section>
+
+{# Icons are inline SVG rather than an icon font or image files: no extra
+   request, no flash of missing glyph, and they inherit the row's colour on
+   hover along with everything else. #}
+<div class="contact-list">
+    <a class="contact-row" href="mailto:carolinekim@hey.com">
+        <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/>
+                <path d="M3 7l9 6 9-6"/>
+            </svg>
+        </span>
+        <span class="contact-label">Email</span>
+        <span class="contact-value">carolinekim@hey.com</span>
+        <span class="contact-arrow">&rarr;</span>
+    </a>
+
+    <a class="contact-row" href="https://www.linkedin.com/in/caroline-y-kim"
+       target="_blank" rel="noopener">
+        <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4v11H3v-11zM10 9.5h3.8v1.5h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76v5.69h-4v-5.04c0-1.2-.02-2.75-1.75-2.75-1.75 0-2.02 1.3-2.02 2.66v5.13h-4v-11z"/>
+            </svg>
+        </span>
+        <span class="contact-label">LinkedIn</span>
+        <span class="contact-value">linkedin.com/in/caroline-y-kim</span>
+        <span class="contact-arrow">&rarr;</span>
+    </a>
+
+    <a class="contact-row" href="https://github.com/kxcaroline"
+       target="_blank" rel="noopener">
+        <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49
+                         0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5
+                         -.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85
+                         .09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75
+                         -.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.33 2.75-1.05
+                         2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06
+                         .36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.06 10.06 0 0 0 22 12.25
+                         C22 6.58 17.52 2 12 2z"/>
+            </svg>
+        </span>
+        <span class="contact-label">GitHub</span>
+        <span class="contact-value">github.com/kxcaroline</span>
+        <span class="contact-arrow">&rarr;</span>
+    </a>
+
+    <a class="contact-row" href="https://huggingface.co/kxcaroline"
+       target="_blank" rel="noopener">
+        <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M8.5 14.5a4.2 4.2 0 0 0 7 0"/>
+                <path d="M9 9.5h.01M15 9.5h.01"/>
+            </svg>
+        </span>
+        <span class="contact-label">Hugging Face</span>
+        <span class="contact-value">huggingface.co/kxcaroline</span>
+        <span class="contact-arrow">&rarr;</span>
+    </a>
+</div>
+{% endblock content %}

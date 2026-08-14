@@ -1,0 +1,10 @@
+# Runtime dependencies, pinned.
+#
+# Direct dependencies only. Flask's own dependencies (Werkzeug, Jinja2,
+# click, itsdangerous, blinker, MarkupSafe) are left to pip to resolve:
+# pinning them here froze click to a version older than other tools in the
+# same environment required, and installing this file downgraded them. Pin
+# what this application chooses; let its libraries choose the rest.
+
+Flask==3.1.3
+gunicorn==23.0.0

@@ -1,0 +1,64 @@
+{
+  "note": "Featured skills: three per focus area. Each carries a one-line proof drawn from the project where it was used, so the claim is checkable. Everything else stays on the site as the 'also worked with' list, generated automatically from the project tags.",
+  "data_sources_note": "Tags that name where data came from rather than what it was worked with. Listed separately so the tools line stays a tools line.",
+  "data_sources": [
+    "ClinicalTrials.gov",
+    "NCI Thesaurus"
+  ],
+  "featured": [
+    {
+      "name": "PostgreSQL",
+      "area_key": "data",
+      "proof": "Loaded ~100k scraped records with idempotent, concurrency-guarded writes",
+      "module": 3
+    },
+    {
+      "name": "pandas",
+      "area_key": "data",
+      "proof": "Cleaned 99,941 rows to 96,948 with an auditable ledger of every drop",
+      "module": 8
+    },
+    {
+      "name": "NumPy",
+      "area_key": "data",
+      "proof": "Implemented a two-layer neural network and its gradients from scratch",
+      "module": 12
+    },
+    {
+      "name": "PyTorch",
+      "area_key": "ml",
+      "proof": "Fine-tuned DistilBERT for admissions prediction and deployed it live",
+      "module": 13
+    },
+    {
+      "name": "scikit-learn",
+      "area_key": "ml",
+      "proof": "TF-IDF, PCA and K-Means over 5,861 messy program names",
+      "module": 9
+    },
+    {
+      "name": "MLflow",
+      "area_key": "ml",
+      "proof": "Tracked parameters, metrics and fitted models across training runs",
+      "module": 11
+    },
+    {
+      "name": "Docker Compose",
+      "area_key": "prod",
+      "proof": "Four-service stack decoupled by a RabbitMQ queue and background worker",
+      "module": 6
+    },
+    {
+      "name": "AWS",
+      "area_key": "prod",
+      "proof": "S3 to SageMaker data pipeline, plus the full stack deployed on EC2",
+      "module": 7
+    },
+    {
+      "name": "pytest",
+      "area_key": "prod",
+      "proof": "100% coverage, marker-organized, run in CI against a real database",
+      "module": 4
+    }
+  ]
+}
