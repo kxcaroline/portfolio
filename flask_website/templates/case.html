@@ -99,14 +99,18 @@
            its label and opens the full image on click. #}
         <div class="case-shots">
             {% for img in m.images %}
-            {% set tsize = img | thumb_size %}
+            {% set dims = m.image_dims[loop.index0] if m.image_dims else None %}
             {% set label = m.image_labels[loop.index0] if m.image_labels else "" %}
+            {# The full capture, not the strip's thumbnail: these render at
+               the full column width, and a 344px file stretched to 660px is
+               visibly soft. Two per page, lazily loaded, and the lightbox
+               opens the same file the browser already has. #}
             <figure class="shot">
-                <img class="{{ m.image_dims[loop.index0] | thumb_class if m.image_dims else '' }}"
-                     src="{{ url_for('static', filename='images/thumbs/' ~ img) }}"
-                     data-full="{{ url_for('static', filename='images/projects/' ~ img) }}"
+                <img class="{{ dims | thumb_class }}"
+                     src="{{ url_for('static', filename='images/projects/' ~ img) }}"
                      alt="{{ m.title }} — {{ label or 'screenshot ' ~ loop.index }}"
-                     {% if tsize %}width="{{ tsize[0] }}" height="{{ tsize[1] }}"{% endif %}
+                     {% if dims %}width="{{ dims[0] }}" height="{{ dims[1] }}"
+                     style="aspect-ratio: {{ dims[0] }} / {{ dims[1] }}"{% endif %}
                      loading="lazy" decoding="async">
                 {% if label %}<figcaption class="shot-cap">{{ label }}</figcaption>{% endif %}
             </figure>

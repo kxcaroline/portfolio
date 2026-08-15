@@ -31,7 +31,7 @@
         "module_1/site_projects.webp"
       ],
       "area_key": "prod",
-      "area": "Production Craft",
+      "area": "Cloud & DevOps",
       "image_dims": [
         [
           1100,
@@ -133,7 +133,7 @@
         "module_4/actions_success.webp"
       ],
       "area_key": "prod",
-      "area": "Production Craft",
+      "area": "Cloud & DevOps",
       "live": {
         "label": "Live docs",
         "url": "https://jhu-software-concepts-ckim179.readthedocs.io/"
@@ -167,7 +167,7 @@
         "module_5/least-privilege-proof.webp"
       ],
       "area_key": "prod",
-      "area": "Production Craft",
+      "area": "Cloud & DevOps",
       "image_dims": [
         [
           789,
@@ -208,7 +208,7 @@
         "module_6/rabbitmq_management.webp"
       ],
       "area_key": "prod",
-      "area": "Production Craft",
+      "area": "Cloud & DevOps",
       "image_dims": [
         [
           1100,
@@ -249,7 +249,7 @@
         "module_7/grad-cafe-bucket.webp"
       ],
       "area_key": "prod",
-      "area": "Production Craft",
+      "area": "Cloud & DevOps",
       "image_dims": [
         [
           1100,
@@ -575,7 +575,7 @@
         "url": "https://kxcaroline-will-you-get-in.hf.space",
         "label": "Run the model right here",
         "note": "Fine-tuned DistilBERT · runs on Hugging Face",
-        "caveat": "Degree type moves this prediction more than grades do: a 3.9-GPA doctoral applicant scores below a 3.4-GPA master's applicant with no GRE, because doctoral admit rates in this data are far lower. The model is reading the base rate, not judging the record."
+        "caveat": "Degree type moves this more than grades do: doctoral admit rates here are far lower, so a 3.9-GPA PhD applicant scores below a 3.4-GPA master's with no GRE. The model reads the base rate, not the record."
       },
       "case": {
         "summary": "Fine-tuning a language model to predict graduate admissions — and the checks that stopped a respectable-looking accuracy from hiding a broken model.",

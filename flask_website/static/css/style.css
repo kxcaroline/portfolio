@@ -1419,28 +1419,41 @@ button.tag { -webkit-appearance: none; appearance: none; line-height: 1.65; }
    tiles to fit; here there is no row to keep, so the tiles hold a readable
    size and wrap onto as many rows as the set needs. Two across at the
    reading measure, one on a phone. */
+/* One figure per row, at the same width as everything else on the page.
+   Two across made each tile 320px, which is smaller than the detail in a
+   chart survives; running the grid wider than the measure fixed the size
+   but broke the page's single right edge. Stacking gets both - each shot
+   is twice as wide as it was, and the column still lines up. */
 .case-shots {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    /* Figures run wider than the prose. The measure exists to keep lines
-       readable, which a chart does not need, and the case column has room
-       to the right of it; holding the screenshots to the text width made
-       them smaller than the detail in them can survive. Capped at the
-       column so they still finish on a shared edge. */
+    grid-template-columns: 1fr;
+    gap: 26px;
     width: 100%;
     max-width: var(--measure);
     margin-top: 22px;
 }
-/* Above this width the case column has room to the right of the measure,
-   so the figures take it. A block child cannot outgrow its container by
-   max-width alone - the width has to be stated - and below the breakpoint
-   there is no room to state, so the grid falls back to the text width. */
-@media (min-width: 1240px) {
-    .case-shots { width: 820px; max-width: none; }
-}
 .case-shots .shot { max-width: none; }
 .case-shots .shot-cap { font-size: 11.5px; margin-top: 8px; }
+/* Each figure keeps its own proportions. The 16:10 frame in the projects
+   strip exists so a row of tiles lines up; stacked one per row there is no
+   row to line up, and forcing the ratio letterboxed a 2.67:1 chart inside
+   200px of empty card. */
+/* Each figure keeps its own proportions, stated inline from the recorded
+   dimensions rather than left to `auto`. A lazily-loaded image with
+   `aspect-ratio: auto` reserves a text line's worth of height and then
+   jumps to its real size once the file lands - the layout shift the
+   width and height attributes exist to prevent. */
+.case-shots img {
+    height: auto;
+    padding: 8px;
+}
+/* A full-page capture would otherwise run past a screen on its own. */
+.case-shots img.thumb-crop {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+    padding: 0;
+}
 
 .case-section {
     padding-top: 30px;

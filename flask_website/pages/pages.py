@@ -142,7 +142,7 @@ def load_stats():
 AREA_ORDER = [
     ("data", "Data Engineering"),
     ("ml", "ML & Modeling"),
-    ("prod", "Production Craft"),
+    ("prod", "Cloud & DevOps"),
 ]
 
 
