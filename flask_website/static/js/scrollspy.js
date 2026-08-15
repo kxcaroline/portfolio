@@ -474,9 +474,31 @@ function isPhone() {
         });
     }
 
+    // A phone cannot hold the demo inside the page. The app stacks further
+    // at this width and runs taller than any frame that still fits, and an
+    // iframe taller than its box cannot be scrolled from inside a scrolling
+    // page on iOS — so the bottom of the app was simply unreachable. Phones
+    // open it in its own tab, where it gets the whole screen. The threshold
+    // matches the stylesheet's phone breakpoint.
+    var EMBED_INLINE_MIN = 621;
+
+    function embedFitsInline() {
+        return window.innerWidth >= EMBED_INLINE_MIN;
+    }
+
     document.querySelectorAll(".embed").forEach(function (box) {
         var btn = box.querySelector(".embed-cta");
-        if (btn) btn.addEventListener("click", function () { revealEmbed(box); });
+        if (!btn) return;
+        // Marked at load so the button carries the outbound arrow before it
+        // is pressed, rather than surprising the reader with a new tab.
+        if (!embedFitsInline()) box.classList.add("embed-external");
+        btn.addEventListener("click", function () {
+            if (embedFitsInline()) {
+                revealEmbed(box);
+                return;
+            }
+            window.open(box.getAttribute("data-embed-url"), "_blank", "noopener");
+        });
 
         // "Try it live" is left alone: it opens the Space on Hugging Face in
         // a new tab. Running the model in place is what the panel below is

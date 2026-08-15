@@ -1291,6 +1291,12 @@ button.tag { -webkit-appearance: none; appearance: none; line-height: 1.65; }
    to the side-by-side height is what was cropping the result card. On a
    phone the fields wrap further and the app grows to 881px. */
 @media (max-width: 900px) { .embed iframe { height: 900px; } }
+/* Below the phone breakpoint the demo opens in its own tab instead of in
+   the page, so the button says so before it is pressed. */
+.embed-label-alt { display: none; }
+.embed-external .embed-label { display: none; }
+.embed-external .embed-label-alt { display: block; }
+.embed-external .embed-label::after { content: " \2197"; }
 
 
 /* ---------- Core skills (featured, with proof) ---------- */

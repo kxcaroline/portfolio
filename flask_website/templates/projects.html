@@ -90,7 +90,11 @@
             <button type="button" class="embed-cta">
                 <span class="embed-play" aria-hidden="true">&#9654;</span>
                 <span>
+                    {# Two labels, one shown: on a phone the demo opens in
+                       its own tab, and "right here" would be a promise the
+                       button does not keep. #}
                     <span class="embed-label">{{ m.embed.label }}</span>
+                    <span class="embed-label embed-label-alt">Open the live demo</span>
                     <span class="embed-note">{{ m.embed.note }}</span>
                 </span>
             </button>

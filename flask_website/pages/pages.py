@@ -139,10 +139,12 @@ def load_stats():
     return data
 
 
+# The order the focus areas are presented in, on the home page and
+# anywhere else they are listed together.
 AREA_ORDER = [
+    ("prod", "Cloud & DevOps"),
     ("data", "Data Engineering"),
     ("ml", "ML & Modeling"),
-    ("prod", "Cloud & DevOps"),
 ]
 
 
