@@ -48,6 +48,16 @@
                         aria-label="Show projects using {{ t }}">{{ t }}</button>{% endfor %}
                 </div>
                 <div class="module-links">
+                    {# The label names a set of destinations, so it appears
+                       only where there is a set: one link needs no heading,
+                       and the private-repo note is a statement rather than
+                       somewhere to go. #}
+                    {% set link_count = (1 if m.case else 0)
+                                      + (1 if m.live else 0)
+                                      + (1 if m.source else 0) %}
+                    {% if link_count > 1 %}
+                    <span class="module-links-label">Explore</span>
+                    {% endif %}
                     {% if m.case %}
                     <a class="module-link module-case"
                        href="{{ url_for('pages.case', module_id=m.id) }}">Read the case study &rarr;</a>
@@ -59,11 +69,13 @@
                     {# A project links its source when there is public source
                        to link. Coursework repositories stay private so that
                        current students are not handed solutions, and those
-                       are labelled rather than given a link that 404s. #}
+                       are labelled rather than given a link that 404s. The
+                       label is the whole row or it is nothing: beside a
+                       working link it reads as a second, dead one. #}
                     {% if m.source %}
                     <a class="module-link module-live" href="{{ m.source.url }}"
                        target="_blank" rel="noopener">{{ m.source.label }} &#8599;</a>
-                    {% else %}
+                    {% elif not (m.case or m.live) %}
                     <span class="module-link module-private"
                           title="Source available on request">Private repo</span>
                     {% endif %}

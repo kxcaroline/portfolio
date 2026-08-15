@@ -184,7 +184,7 @@
         "Least Privilege"
       ],
       "source": {
-        "label": "Read the database layer",
+        "label": "Database layer",
         "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_05-database"
       }
     },
@@ -198,8 +198,7 @@
         "RabbitMQ",
         "SQLAlchemy",
         "Alembic",
-        "Prometheus",
-        "Flask"
+        "Prometheus"
       ],
       "overview": "Refactors the service into containerized microservices — Flask web tier, RabbitMQ broker, background worker, PostgreSQL, and an optional LLM inference service — where button clicks publish tasks and return 202 immediately, and the whole stack runs reproducibly with one compose command.",
       "learned": "The value of decoupling: once the web tier stopped doing long-running work itself, deployment, scaling, and failure-handling all got simpler at once.",
@@ -225,7 +224,7 @@
         "RabbitMQ"
       ],
       "source": {
-        "label": "Read the container stack",
+        "label": "Compose file",
         "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_06-containers"
       }
     },
@@ -459,7 +458,7 @@
         "Growth Rates"
       ],
       "source": {
-        "label": "Read the join code",
+        "label": "Join code",
         "url": "https://github.com/kxcaroline/portfolio/tree/main/excerpts/module_10-second-source"
       }
     },
@@ -641,7 +640,7 @@
         "Training Log"
       ],
       "source": {
-        "label": "Read the serving code",
+        "label": "Serving code",
         "url": "https://huggingface.co/spaces/kxcaroline/will-you-get-in/tree/main"
       }
     }
