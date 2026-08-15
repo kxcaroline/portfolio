@@ -36,5 +36,5 @@ Two projects have their code public elsewhere rather than excerpted here:
   [Read the Docs](https://jhu-software-concepts-ckim179.readthedocs.io/).
 
 For the reasoning behind each project, the case studies on
-[carolinekim.dev/projects](https://carolinekim.dev/projects) carry the
+[caroline.kim/projects](https://caroline.kim/projects) carry the
 problem, the approach and what went wrong.

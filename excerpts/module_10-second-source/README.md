@@ -30,6 +30,6 @@ This project was self-directed rather than a prescribed exercise — the
 question, the sources and the method were mine — which is why a fuller slice
 of it appears here than for the other modules.
 
-The [dashboard](https://carolinekim.dev/demos/trials) it feeds is public, and
-the [case study](https://carolinekim.dev/projects/10) covers the classifier
+The [dashboard](https://caroline.kim/demos/trials) it feeds is public, and
+the [case study](https://caroline.kim/projects/10) covers the classifier
 validation and the audited miss rate.

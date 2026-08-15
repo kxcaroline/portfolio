@@ -5,7 +5,7 @@
 My personal site — a Flask application that renders its own project index
 from JSON, so adding work is a data edit rather than a template change.
 
-**Live:** [carolinekim.dev](https://carolinekim.dev) · **Demo it hosts:**
+**Live:** [caroline.kim](https://caroline.kim) · **Demo it hosts:**
 [Will You Get In?](https://huggingface.co/spaces/kxcaroline/will-you-get-in),
 a DistilBERT admissions model embedded in the projects page
 
@@ -33,8 +33,8 @@ The site is small on purpose. These are the parts that took the thinking:
   files, that every case study resolves, that loaders survive malformed
   input — and CI fails below 100% statement coverage.
 - **Measured, not eyeballed.** Layout, contrast and payload were checked with
-  headless-browser measurement and Lighthouse: 98 performance, 100
-  accessibility. Muted text sits at 5.3:1 in both themes; the theme toggle's
+  headless-browser measurement and Lighthouse: 99-100 performance and 100
+  accessibility, best practices and SEO. Muted text sits at 5.3:1 in both themes; the theme toggle's
   border clears the 3:1 required of interface boundaries.
 
 ## Run it
@@ -52,8 +52,8 @@ CI runs five jobs on every push (`.github/workflows/ci.yml`), and each can
 be run locally first:
 
 ```bash
-pylint flask_website run.py build_thumbs.py build_stats.py tests/test_site.py --fail-under=10
-mypy flask_website run.py build_thumbs.py build_stats.py tests
+pylint flask_website run.py build_thumbs.py build_stats.py build_assets.py tests/test_site.py --fail-under=10
+mypy flask_website run.py build_thumbs.py build_stats.py build_assets.py tests
 npx pyright                       # pinned in CI to the version tested here
 pytest --cov=flask_website --cov-fail-under=100
 pre-commit run --all-files        # after: pip install pre-commit && pre-commit install
@@ -77,11 +77,13 @@ flask_website/
   config.py             configuration object
   pages/pages.py        routes, JSON loaders, chart projection
   templates/            base + one template per page, plus partials
-  static/               stylesheet, one JS file, images, demos
+  static/               stylesheet, one JS file, images, fonts, demos
   data/                 projects, stats, skills, thumbnail sizes
 tests/test_site.py      the suite
 build_thumbs.py         regenerates thumbnails after adding a screenshot
 build_stats.py          recomputes the homepage figures from the dataset
+build_assets.py         writes the minified stylesheet and script
+excerpts/               selected files from projects whose repos stay private
 ```
 
 ## Adding a project
