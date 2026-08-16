@@ -1059,6 +1059,81 @@ a { color: inherit; text-decoration: none; }
     text-align: center;
 }
 
+/* ---------- Facet bar: area chips and a tool picker ----------
+   Rendered in the page head, hidden until the script that drives it is
+   running: the filtering is client-side, and a control that does nothing
+   is worse than no control. */
+.pfilter { display: none; }
+.js .pfilter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    max-width: var(--measure);
+}
+.pfilter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+}
+.pchip {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 4px 13px;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.pchip:hover { border-color: var(--ink-soft); }
+.pchip.on {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+}
+/* A picker rather than a second row of pills: the tools run 13 to 23 per
+   area and nearly all of them match a single project, so this is a lookup
+   and a lookup wants one control - and a native wheel on a phone. */
+.ptools {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--hairline);
+    border-radius: 0;
+    padding: 3px 22px 3px 2px;
+    cursor: pointer;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-size: 5px 5px, 5px 5px;
+    background-position: right 9px center, right 4px center;
+    background-repeat: no-repeat;
+}
+.pcount {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+}
+@media (max-width: 620px) {
+    .js .pfilter { gap: 8px; }
+    .pchip {
+        font-size: 11px;
+        min-height: 24px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .ptools { font-size: 11px; min-height: 24px; flex: 1 1 100%; }
+}
+
 /* ---------- Tag filter ---------- */
 .module-tags .tag { cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s; }
 .module-tags .tag.active {

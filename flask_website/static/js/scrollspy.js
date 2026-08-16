@@ -282,12 +282,68 @@ function isPhone() {
     // using that technology; click it again (or the clear chip) to reset.
     var filterBar = document.createElement("div");
     filterBar.className = "filter-bar";
-    filterBar.innerHTML = 'Showing projects using <span class="filter-tag"></span>' +
+    filterBar.innerHTML = 'Showing <span class="filter-tag"></span>' +
         '<button type="button" class="filter-clear">Clear &#215;</button>';
     var modulesWrap = document.querySelector(".modules");
     if (modulesWrap) modulesWrap.parentNode.insertBefore(filterBar, modulesWrap);
     var filterLabel = filterBar.querySelector(".filter-tag");
     var activeTag = null;
+
+    // The facet bar in the page head: area chips and a tool picker. Both
+    // narrow the same list, so they share one piece of state rather than
+    // fighting each other from two.
+    var chipButtons = [].slice.call(document.querySelectorAll(".pchip"));
+    var toolSelect = document.querySelector(".ptools");
+    var countOut = document.querySelector(".pcount");
+    var activeArea = "";
+
+    function areaLabel(key) {
+        var found = "";
+        chipButtons.forEach(function (chip) {
+            if (chip.getAttribute("data-area") === key) {
+                // The chip carries its count; the label is the rest.
+                found = chip.textContent.trim().replace(/\s+\d+$/, "");
+            }
+        });
+        return found;
+    }
+
+    function hasTag(module, name) {
+        var needle = name.toLowerCase();
+        return Array.prototype.some.call(
+            module.querySelectorAll(".tag"),
+            function (t) { return t.textContent.trim().toLowerCase() === needle; });
+    }
+
+    function matches(module) {
+        if (activeArea && !module.classList.contains("area-" + activeArea)) return false;
+        return !activeTag || hasTag(module, activeTag);
+    }
+
+    // Options that lead nowhere inside the locked area are hidden rather
+    // than left to return an empty list.
+    function syncTools() {
+        if (!toolSelect) return;
+        var options = toolSelect.options;
+        var offered = 0;
+        for (var i = 1; i < options.length; i += 1) {
+            var areas = (options[i].getAttribute("data-areas") || "").split(" ");
+            var ok = !activeArea || areas.indexOf(activeArea) !== -1;
+            options[i].hidden = !ok;
+            options[i].disabled = !ok;
+            if (ok) offered += 1;
+        }
+        options[0].textContent = "Any tool (" + offered + ")";
+        toolSelect.value = activeTag || "";
+    }
+
+    function syncChips() {
+        chipButtons.forEach(function (chip) {
+            var on = chip.getAttribute("data-area") === activeArea;
+            chip.classList.toggle("on", on);
+            chip.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+    }
 
     // Where the reader was when the filter went on, so clearing puts them
     // back rather than at the top of the page. Stored as a module id plus
@@ -320,6 +376,10 @@ function isPhone() {
     function clearFilter() {
         var point = restorePoint;
         activeTag = null;
+        activeArea = "";
+        syncChips();
+        syncTools();
+        if (countOut) countOut.textContent = "";
         filterOn = false;
         restorePoint = null;
         filterBar.classList.remove("show");
@@ -374,22 +434,23 @@ function isPhone() {
         })();
     }
 
-    function applyFilter(tag) {
-        // Only capture on the way in - switching from one tag to another
+    function runFilter() {
+        // Only capture on the way in - switching from one facet to another
         // should still return to where the reader started.
         if (!filterOn) restorePoint = anchorModule();
-        activeTag = tag;
         filterOn = true;
-        filterLabel.textContent = tag;
+        var parts = [];
+        if (activeArea) parts.push(areaLabel(activeArea));
+        if (activeTag) parts.push(activeTag);
+        filterLabel.textContent = parts.join(" \u00b7 ");
         filterBar.classList.add("show");
         document.body.classList.add("filtering");
-        var needle = tag.toLowerCase();
+        var shown = 0;
         modules.forEach(function (m) {
-            var hit = Array.prototype.some.call(
-                m.querySelectorAll(".tag"),
-                function (t) { return t.textContent.trim().toLowerCase() === needle; });
+            var hit = matches(m);
             m.style.display = hit ? "" : "none";
             if (hit) {
+                shown += 1;
                 m.classList.add("in");
                 m.classList.add("no-anim-self");
                 setOpen(m, true);
@@ -398,16 +459,25 @@ function isPhone() {
         requestAnimationFrame(function () {
             modules.forEach(function (m) { m.classList.remove("no-anim-self"); });
         });
+        var needle = activeTag ? activeTag.toLowerCase() : null;
         document.querySelectorAll(".tag").forEach(function (t) {
             t.classList.toggle("active",
-                t.textContent.trim().toLowerCase() === needle);
+                Boolean(needle) && t.textContent.trim().toLowerCase() === needle);
         });
+        syncChips();
+        syncTools();
+        if (countOut) countOut.textContent = shown + " of " + modules.length;
         // Land on the filter bar, not the top of the page. Scrolling to zero
         // put the page head and the dataset band on screen and left the bar
         // below the fold, so a tag matching one project looked like it had
         // simply thrown the reader back to the top with nothing to show.
         var barTop = window.scrollY + filterBar.getBoundingClientRect().top - 16;
         window.scrollTo({ top: Math.max(0, barTop), behavior: "instant" });
+    }
+
+    function applyFilter(tag) {
+        activeTag = tag;
+        runFilter();
     }
 
     // A ?tool= parameter (from the homepage stack) applies on arrival.
@@ -429,8 +499,40 @@ function isPhone() {
             }
             return;
         }
-        if (e.target.closest(".filter-clear")) clearFilter();
+        if (e.target.closest(".filter-clear")) {
+            clearFilter();
+            return;
+        }
+
+        // Area chips. Pressing the one already on, or the All chip, is the
+        // way back out; switching area drops the tool, since a tool from
+        // the previous area would leave the reader looking at nothing.
+        var chip = e.target.closest(".pchip");
+        if (chip) {
+            var key = chip.getAttribute("data-area") || "";
+            if (!key || key === activeArea) {
+                clearFilter();
+                return;
+            }
+            activeArea = key;
+            activeTag = null;
+            runFilter();
+        }
     });
+
+    if (toolSelect) {
+        toolSelect.addEventListener("change", function () {
+            activeTag = toolSelect.value || null;
+            if (!activeTag && !activeArea) {
+                clearFilter();
+                return;
+            }
+            runFilter();
+        });
+    }
+
+    syncChips();
+    syncTools();
 
     // ---------------- Click-to-load embeds (live demos) ----------------
     function loadEmbed(box) {

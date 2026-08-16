@@ -109,6 +109,32 @@ def test_area_keys_are_known(modules):
         assert module["area_key"] in AREA_KEYS
 
 
+def test_filters_never_promise_more_than_exists(modules):
+    """A facet that overcounts sends the reader to an empty list.
+
+    The bar is built from the projects rather than a second file, so this
+    checks the arithmetic rather than the wiring: area counts have to sum
+    to the whole set, and every tool has to name the areas it is really
+    in and the number of projects it is really on.
+    """
+    filters = pages.build_filters(modules)
+
+    assert filters["total"] == len(modules)
+    assert sum(a["count"] for a in filters["areas"]) == len(modules)
+    for area in filters["areas"]:
+        assert area["key"] in AREA_KEYS
+        assert area["count"] == sum(
+            1 for m in modules if m["area_key"] == area["key"])
+
+    for tool in filters["tools"]:
+        holders = [m for m in modules if tool["name"] in m["tags"]]
+        assert tool["count"] == len(holders)
+        assert tool["areas"] == sorted({m["area_key"] for m in holders})
+
+    names = [t["name"] for t in filters["tools"]]
+    assert names == sorted(names, key=str.lower)
+
+
 def test_declared_image_dimensions_match_the_files(modules):
     """Wrong dimensions reintroduce layout shift without looking wrong.
 

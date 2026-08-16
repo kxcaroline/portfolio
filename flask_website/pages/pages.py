@@ -117,6 +117,38 @@ def group_projects(modules, sections):
     return groups
 
 
+def build_filters(modules):
+    """Facets for the projects page: areas, and the tools inside each.
+
+    Each tool carries the areas it appears in, so locking an area can hide
+    the options that would lead nowhere without rebuilding the list. Counts
+    come from the projects themselves rather than a second file, so a filter
+    can never advertise more results than exist.
+    """
+    areas = []
+    for key, label in AREA_ORDER:
+        count = sum(1 for m in modules if m.get("area_key") == key)
+        if count:
+            areas.append({"key": key, "label": label, "count": count})
+
+    tools: dict[str, dict] = {}
+    for module in modules:
+        for tag in module.get("tags", []):
+            entry = tools.setdefault(tag, {"name": tag, "areas": set(), "count": 0})
+            entry["count"] += 1
+            if module.get("area_key"):
+                entry["areas"].add(module["area_key"])
+
+    return {
+        "areas": areas,
+        "total": len(modules),
+        "tools": [
+            {"name": t["name"], "count": t["count"], "areas": sorted(t["areas"])}
+            for t in sorted(tools.values(), key=lambda t: t["name"].lower())
+        ],
+    }
+
+
 def load_stats():
     """Read the aggregate dataset figures shown on the home page.
 
@@ -332,6 +364,7 @@ def projects():
         active="projects",
         modules=modules,
         groups=group_projects(modules, load_sections()),
+        filters=build_filters(modules),
         stats=stats,
         points=points,
         # The figure's own sample, not the site-wide record count: the curve
