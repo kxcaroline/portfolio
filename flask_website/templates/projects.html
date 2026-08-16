@@ -19,17 +19,21 @@
     {% if filters and filters.areas %}
     <div class="pfilter" role="group" aria-label="Filter projects">
         <span class="pfilter-label">Filter</span>
-        <button type="button" class="pchip on" data-area="">All {{ filters.total }}</button>
-        {% for area in filters.areas %}
-        <button type="button" class="pchip" data-area="{{ area.key }}">{{ area.label }} {{ area.count }}</button>
-        {% endfor %}
+        {# The picker leads: it is the only control that covers the whole
+           set, so it stands where an "all" chip otherwise would. #}
         <select class="ptools" aria-label="Filter by tool">
             <option value="">Any tool ({{ filters.tools | length }})</option>
             {% for tool in filters.tools %}
             <option value="{{ tool.name }}" data-areas="{{ tool.areas | join(' ') }}">{{ tool.name }}</option>
             {% endfor %}
         </select>
+        {% for area in filters.areas %}
+        <button type="button" class="pchip" data-area="{{ area.key }}">{{ area.label }} {{ area.count }}</button>
+        {% endfor %}
         <span class="pcount" aria-live="polite"></span>
+        {# Shown only while something is on, so the way out is never further
+           than the thing that got you here. #}
+        <button type="button" class="pclear" hidden>Clear &#215;</button>
     </div>
     {% endif %}
 </header>

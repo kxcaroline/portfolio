@@ -295,6 +295,7 @@ function isPhone() {
     var chipButtons = [].slice.call(document.querySelectorAll(".pchip"));
     var toolSelect = document.querySelector(".ptools");
     var countOut = document.querySelector(".pcount");
+    var clearChip = document.querySelector(".pclear");
     var activeArea = "";
 
     function areaLabel(key) {
@@ -339,10 +340,12 @@ function isPhone() {
 
     function syncChips() {
         chipButtons.forEach(function (chip) {
-            var on = chip.getAttribute("data-area") === activeArea;
+            var on = Boolean(activeArea) &&
+                chip.getAttribute("data-area") === activeArea;
             chip.classList.toggle("on", on);
             chip.setAttribute("aria-pressed", on ? "true" : "false");
         });
+        if (clearChip) clearChip.hidden = !(activeArea || activeTag);
     }
 
     // Where the reader was when the filter went on, so clearing puts them
@@ -499,7 +502,7 @@ function isPhone() {
             }
             return;
         }
-        if (e.target.closest(".filter-clear")) {
+        if (e.target.closest(".filter-clear") || e.target.closest(".pclear")) {
             clearFilter();
             return;
         }

@@ -1067,7 +1067,10 @@ a { color: inherit; text-decoration: none; }
 .js .pfilter {
     display: flex;
     align-items: center;
-    gap: 10px;
+    /* Tuned rather than chosen: the picker, three chips and the label come
+       to 647px of the 660px column, so the row holds together instead of
+       dropping one chip onto a line of its own. */
+    gap: 9px 8px;
     flex-wrap: wrap;
     margin-top: 22px;
     max-width: var(--measure);
@@ -1085,7 +1088,7 @@ a { color: inherit; text-decoration: none; }
     font-size: 11.5px;
     border: 1px solid var(--hairline);
     border-radius: 999px;
-    padding: 4px 13px;
+    padding: 4px 12px;
     background: transparent;
     color: var(--ink-soft);
     cursor: pointer;
@@ -1123,6 +1126,31 @@ a { color: inherit; text-decoration: none; }
     font-size: 11px;
     color: var(--dim);
 }
+/* The way out sits beside the count, not on a strip further down: the
+   reader who turned a filter on is looking at the bar that did it. */
+.pclear {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 11px;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--dim);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.pclear:hover { color: var(--ink); }
+.pclear[hidden] { display: none; }
+/* Narrower than the full measure the row cannot hold everything, and a
+   lone chip on a second line reads as a mistake. Below this the picker
+   drops under the chips instead, which wraps at a seam rather than
+   mid-set. */
+@media (max-width: 1100px) {
+    .ptools { order: 1; }
+    .pcount { order: 2; }
+    .pclear { order: 3; }
+}
 @media (max-width: 620px) {
     .js .pfilter { gap: 8px; }
     .pchip {
@@ -1131,7 +1159,8 @@ a { color: inherit; text-decoration: none; }
         display: inline-flex;
         align-items: center;
     }
-    .ptools { font-size: 11px; min-height: 24px; flex: 1 1 100%; }
+    .ptools { font-size: 11px; min-height: 24px; }
+    .pclear { min-height: 24px; }
 }
 
 /* ---------- Tag filter ---------- */
